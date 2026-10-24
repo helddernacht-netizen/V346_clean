@@ -118,7 +118,6 @@ BLACKLIST_START=99
 BLACKLIST_END=99
 BEST_START=0
 BEST_END=24
-BLACKLIST_TIME()
 LOCK=Lock()
 STATE=load_state()
 BOOT_TIME=datetime.now(ZoneInfo("Europe/Berlin"))
