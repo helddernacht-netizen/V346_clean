@@ -118,6 +118,8 @@ BLACKLIST_START=99
 BLACKLIST_END=99
 BEST_START=0
 BEST_END=24
+def is_blacklist_time() -> Tuple[bool,str]:
+    return False,""
 STATE=load_state()
 BOOT_TIME=datetime.now(ZoneInfo("Europe/Berlin"))
 
@@ -198,13 +200,6 @@ def get_current_whitelist() -> List[str]:
 class PoolPayload(BaseModel):
     pool:List[str]
     details:Optional[List[dict]]=None
-
-def is_blacklist_time() -> Tuple[bool,str]:
-    try:
-        h=datetime.now(ZoneInfo("Europe/Berlin")).hour
-        if h>=BLACKLIST_START or h<BLACKLIST_END:
-            return True,f"BLACKLIST {h}:00 CET - Shredder jagt nachts"
-        return False,""
     except Exception as e:
         log.error(f"[blacklist_time] {e}")
         return False,""
