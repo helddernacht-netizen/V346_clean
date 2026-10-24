@@ -520,7 +520,8 @@ def run_turtle_scan():
             if STATE.get("status")!="JAGT":
                 log.info(f"[TURTLE] skip status={STATE.get('status')}")
                 return STATE.get("vorauswahl_queue",[])
-            results = turtle_scanner.scan()
+            results = turtle_scanner.scan_once(get_market_data)
+            STATE["vorauswahl_queue"] = results[:20]
             STATE["vorauswahl_queue"] = results[:20]
             STATE["dynamic_whitelist"] = [r["symbol"] if isinstance(r, dict) else r for r in results[:20]]
             save_state(STATE)
