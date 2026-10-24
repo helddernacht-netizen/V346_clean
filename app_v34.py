@@ -118,7 +118,6 @@ BLACKLIST_START=99
 BLACKLIST_END=99
 BEST_START=0
 BEST_END=24
-LOCK=Lock()
 STATE=load_state()
 BOOT_TIME=datetime.now(ZoneInfo("Europe/Berlin"))
 
@@ -140,6 +139,11 @@ HUBBLE_CFG: Dict[str, Any] = {
     "btc_dom_warn": 55,
     "cache_minutes": 15
 }
+
+def is_blacklist_time() -> Tuple[bool,str]:
+    # BLACKLIST DEAKTIVIERT 2026-10-25 - kein 22-08 Pause mehr, 24/7 JAGT
+    return False,""
+LOCK=Lock()
 
 def load_universe_100_fixed() -> List[str]:
     try:
