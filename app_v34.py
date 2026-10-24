@@ -650,27 +650,10 @@ def scan_all():
         return json_safe({"status":"ERROR","reason":str(e),"results":[],"whitelist":get_current_whitelist()})
 
 # === HEALTH FÜR UPTIMEROBOT - SUPER SCHNELL OHNE LOCK ===
+@app.get("/health")
 @app.get("/api/v34/health")
-def health():
-    try:
-        uptime=(datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds()
-        with LOCK:
-            queue_len=len(STATE.get("vorauswahl_queue",[]))
-            open_len=len(STATE.get("open_positions",[]))
-            hubble_len=len(STATE.get("hubble_scores",[]))
-            hubble_ready=len([h for h in STATE.get("hubble_scores",[]) if h.get("ready")])
-        return {
-            "status":"online","version":"V3.4.5 HUBBLE DICHT","utc":datetime.utcnow().isoformat(),
-            "uptime_sec":int(uptime),"exchanges":list(connector.exchanges.keys()),
-            "universe":len(UNIVERSE_100),"queue":queue_len,"open":open_len,
-            "hubble":hubble_len,"hubble_ready":hubble_ready,
-            "btc_dom":hubble_engine.indices_cache.get("btc_dom"),"usdt_dom":hubble_engine.indices_cache.get("usdt_dom"),
-            "mode":"NO AUTO TRADING - SCORE ONLY - LAFETTE GESICHERT"
-        }
-    except Exception as e:
-        log.error(f"[health] {e}")
-        return {"status":"online","version":"V3.4.5 HUBBLE","error":str(e)}
-
+async def health():
+    return {"status": "ok", "version": "3.4.6", "mode": "JAGT"}
 @app.get("/health")
 def health_alias():
     try:
