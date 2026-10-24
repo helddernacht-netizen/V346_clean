@@ -650,16 +650,15 @@ def scan_all():
         return json_safe({"status":"ERROR","reason":str(e),"results":[],"whitelist":get_current_whitelist()})
 
 # === HEALTH FÜR UPTIMEROBOT - SUPER SCHNELL OHNE LOCK ===
+from datetime import datetime
+
+BOOT_TIME = datetime.utcnow()  # falls nicht schon vorhanden
+
 @app.get("/health")
 @app.get("/api/v34/health")
+@app.get("/ping")
 async def health():
-    return {"status": "ok", "version": "3.4.6", "mode": "JAGT"}
-@app.get("/health")
-def health_alias():
-    try:
-        return {"status":"online","uptime":int((datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds())}
-    except Exception as e:
-        return {"status":"online","error":str(e)}
+    return {"status": "ok", "version": "3.4.6", "mode": "JAGT", "uptime": int((datetime.utcnow() - BOOT_TIME).total_seconds())}
 
 @app.get("/ping")
 def ping():
