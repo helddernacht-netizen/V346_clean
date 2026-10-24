@@ -1,53 +1,55 @@
 """
-EXCHANGE CONNECTOR - 5 größte Börsen, kein Mock
-Binance, Coinbase, Bybit, OKX, Kraken
-Public Data only, kein API Key nötig
+EXCHANGE CONNECTOR - V3.4.6 RINA FINAL
+5 Börsen, Public + Kraken Private (optional via ENV)
 """
 
 import ccxt
 import pandas as pd
 import time
+import os
 from typing import Optional, Dict, List
 
 class ExchangeConnector:
     def __init__(self):
-        # 5 größte nach Volumen
         self.exchanges = {}
+        self.kraken_auth = False
+        
+        # Public Börsen
+        for name in ["binance", "coinbase", "bybit", "okx"]:
+            try:
+                self.exchanges[name] = getattr(ccxt, name)({"enableRateLimit": True, "options": {"defaultType": "spot"}})
+            except: pass
+        
+        # Kraken - Public oder Private je nach ENV
         try:
-            self.exchanges['binance'] = ccxt.binance({'enableRateLimit': True, 'options': {'defaultType': 'spot'}})
-        except: pass
-        try:
-            self.exchanges['coinbase'] = ccxt.coinbase({'enableRateLimit': True})
-        except: pass
-        try:
-            self.exchanges['bybit'] = ccxt.bybit({'enableRateLimit': True, 'options': {'defaultType': 'spot'}})
-        except: pass
-        try:
-            self.exchanges['okx'] = ccxt.okx({'enableRateLimit': True})
-        except: pass
-        try:
-            self.exchanges['kraken'] = ccxt.kraken({'enableRateLimit': True})
+            k = os.getenv("KRAKEN_API_KEY","").strip()
+            s = os.getenv("KRAKEN_API_SECRET","").strip()
+            if k and s:
+                self.exchanges["kraken"] = ccxt.kraken({
+                    "enableRateLimit": True, 
+                    "apiKey": k, 
+                    "secret": s
+                })
+                self.kraken_auth = True
+            else:
+                self.exchanges["kraken"] = ccxt.kraken({"enableRateLimit": True})
         except: pass
 
-        print(f"[Connector] {len(self.exchanges)} Börsen aktiv: {list(self.exchanges.keys())}")
+        print(f"[Connector] {list(self.exchanges.keys())} kraken_auth={self.kraken_auth}")
 
     def normalize_symbol(self, symbol: str, exchange_id: str) -> List[str]:
-        """Versuche verschiedene Schreibweisen: WIFUSDT -> WIF/USDT, WIF/USD, WIF-USDT"""
         tries = []
         base = symbol.replace('USDT','').replace('USD','').replace('/','').replace('-','')
-        # Original
         tries.append(symbol)
-        # Mit Slash
         if 'USDT' in symbol:
             tries.append(f"{base}/USDT")
             tries.append(f"{base}/USD")
         elif '/' not in symbol:
             tries.append(f"{symbol}/USDT")
-        # Für Coinbase oft USD statt USDT
         if exchange_id == 'coinbase':
             tries.append(f"{base}/USD")
             tries.append(f"{base}-USD")
-        # Unique
+        # unique
         seen = []
         for t in tries:
             if t not in seen:
@@ -55,7 +57,6 @@ class ExchangeConnector:
         return seen
 
     def fetch_ticker_safe(self, symbol: str) -> Dict[str, Dict]:
-        """Holt Ticker von allen 5 Börsen, returned dict exchange->ticker"""
         result = {}
         for eid, ex in self.exchanges.items():
             for try_sym in self.normalize_symbol(symbol, eid):
@@ -64,15 +65,12 @@ class ExchangeConnector:
                     if ticker and ticker.get('last') is not None:
                         result[eid] = ticker
                         break
-                except Exception as e:
-                    # print(f"{eid} {try_sym} fail {e}")
+                except:
                     continue
-            # small delay to respect rate limit
             time.sleep(ex.rateLimit/1000 if hasattr(ex,'rateLimit') else 0.1)
         return result
 
     def fetch_ohlcv_safe(self, symbol: str, timeframe: str = '1h', limit: int = 100) -> Optional[pd.DataFrame]:
-        """Holt OHLCV von erster Börse die liefert, als DataFrame"""
         for eid, ex in self.exchanges.items():
             for try_sym in self.normalize_symbol(symbol, eid):
                 try:
@@ -83,13 +81,12 @@ class ExchangeConnector:
                         df = pd.DataFrame(ohlcv, columns=['timestamp','open','high','low','close','volume'])
                         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
                         return df
-                except Exception as e:
+                except:
                     continue
             time.sleep(0.1)
         return None
 
-    def fetch_ohlcv_multi(self, symbol: str, timeframe: str, limit: int) -> Dict[str, pd.DataFrame]:
-        """Holt OHLCV von ALLEN Börsen die es haben, für MoneyFlow Volumen-Vergleich"""
+    def fetch_ohlcv_multi(self, symbol: str, timeframe: str = '1h', limit: int = 100) -> Dict[str, pd.DataFrame]:
         result = {}
         for eid, ex in self.exchanges.items():
             for try_sym in self.normalize_symbol(symbol, eid):
@@ -104,13 +101,11 @@ class ExchangeConnector:
         return result
 
     def fetch_funding_rate(self, symbol: str) -> Optional[float]:
-        """Funding für Perps, negativ = viele Shorts = Squeeze Gefahr"""
         for eid in ['bybit','binance','okx']:
             ex = self.exchanges.get(eid)
             if not ex: continue
             for try_sym in self.normalize_symbol(symbol, eid):
                 try:
-                    # Perps Symbol oft ohne Slash: WIFUSDT
                     fr = ex.fetch_funding_rate(try_sym)
                     if fr and 'fundingRate' in fr:
                         return float(fr['fundingRate'])
@@ -131,5 +126,15 @@ class ExchangeConnector:
                     continue
         return None
 
-# Global singleton für V3.4
+    # NEU: Kraken Private
+    def fetch_balance_kraken(self):
+        if not self.kraken_auth:
+            return None
+        try:
+            bal = self.exchanges["kraken"].fetch_balance()
+            return {"usdt": bal.get("total",{}).get("USDT",0), "total": bal.get("total",{})}
+        except Exception as e:
+            return {"error": str(e)}
+
+# Global Singleton
 connector = ExchangeConnector()
