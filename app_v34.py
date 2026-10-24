@@ -447,14 +447,14 @@ class HubbleEngine:
                 story_parts.append(f"BTC.D {btc_dom:.1f}% hoch - BTC dominiert")
 
             # 6. Best TimeWindow 9-15 CET = +5
-            hour = datetime.now(ZoneInfo("Europe/Berlin")).hour
-            timewindow = f"{hour:02d}:00 CET"
-            if BEST_START <= hour < BEST_END:
-                score += 5
-                bonus += 5
-                story_parts.append(f"{timewindow} BEST Time")
-            else:
-                story_parts.append(f"{timewindow}")
+            # hour = datetime.now(ZoneInfo("Europe/Berlin")).hour
+            # timewindow = f"{hour:02d}:00 CET"
+            # if BEST_START <= hour < BEST_END:
+            #    score += 5
+            #    bonus += 5
+            #    story_parts.append(f"{timewindow} BEST Time")
+            #else:
+            #    story_parts.append(f"{timewindow}")
 
             # Clamp 0-100
             score = max(0, min(100, score))
