@@ -198,11 +198,12 @@ def get_current_whitelist() -> List[str]:
         return UNIVERSE_100[:20]
 
 class PoolPayload(BaseModel):
-    pool:List[str]
-    details:Optional[List[dict]]=None
-    def is_best_time() -> bool:
-        log.error(f"[blacklist_time] {e}")
-        return False,""
+    pool: List[str]
+    details: Optional[List[dict]] = None
+
+def is_blacklist_time() -> Tuple[bool,str]:
+    # BLACKLIST AUS - 24/7 JAGT
+    return False, ""
 
 def is_best_time() -> bool:
     try:
@@ -646,12 +647,24 @@ def scan_all():
 
 # === HEALTH FÜR UPTIMEROBOT - SUPER SCHNELL OHNE LOCK ===
 from datetime import datetime
+BOOT_TIME = datetime.utcnow()
+
 @app.get("/health")
 @app.get("/api/v34/health")
 @app.get("/ping")
 async def health():
     return {"status": "ok", "version": "3.4.6", "mode": "JAGT", "uptime": int((datetime.utcnow() - BOOT_TIME).total_seconds())}
 
+@app.get("/api/v34/rina")
+def api_rina():
+    try:
+        with LOCK:
+            scores = STATE.get("hubble_scores",[])
+            top = sorted(scores, key=lambda x: x.get("score",0), reverse=True)[:8]
+            return JSONResponse(json_safe({"top_ready": [s for s in top if s.get("ready")], "scores": top, "available": RINA_AVAILABLE}))
+    except Exception as e:
+        return JSONResponse({"error": str(e), "top_ready": []})
+        
 @app.get("/ping")
 def ping():
     return {"status":"online","ping":"pong","ts":datetime.utcnow().isoformat(),"version":"V3.4.5 HUBBLE"}
