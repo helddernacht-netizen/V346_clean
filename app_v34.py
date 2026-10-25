@@ -10,8 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Tuple
-from threading import Lock, Thread
-
 import traceback, json, numpy as np, time, requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -353,13 +351,19 @@ scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5
 scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
 scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
 scheduler.start()
+from threading import Lock, Thread
 def _boot_warmup():
     time.sleep(3)
-    run_turtle_scan()
-    time.sleep(2)
-    run_hubble_inspection()
+    try:
+        run_turtle_scan()
+        time.sleep(2)
+        run_hubble_inspection()
+        log.info("[BOOT] warmup done - queue + hubble gefüllt")
+    except Exception as e:
+        log.error(f"[BOOT] warmup fail {e}")
 
 Thread(target=_boot_warmup, daemon=True).start()
+
 update_status()
 hubble_engine.fetch_indices()
 log.info("V3.4.6 CLEAN NO-BREAKER gestartet")
