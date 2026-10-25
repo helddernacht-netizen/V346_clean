@@ -522,37 +522,55 @@ def api_rina():
 
 @app.get("/api/v34/turtles")
 def api_turtles():
-    with LOCK:
-        return JSONResponse(json_safe({"queue":STATE.get("vorauswahl_queue",[]),"cursor":SCAN_CURSOR,"universe":len(UNIVERSE_100)}))
+    try:
+        with LOCK:
+            q = STATE.get("vorauswahl_queue",[])[:100]
+            safe = json_safe(q)
+        return JSONResponse({"queue": safe, "cnt": len(safe), "cursor": STATE.get("turtle_cursor",0)})
+    except Exception as e:
+        log.error(f"[API TURTLES] {e} {traceback.format_exc()}")
+        return JSONResponse({"queue": [], "cnt": 0, "cursor": 0, "error": str(e)[:200]})
 @app.get("/api/v34/splinter")
 def api_splinter():
-    with LOCK:
-        return JSONResponse(json_safe({"inspection":STATE.get("splinter_inspection",[])}))
-@app.get("/api/v34/hubble")
+    try:
+        with LOCK:
+            ins = STATE.get("splinter_inspection",[])
+            safe = json_safe(ins)
+        return JSONResponse({"inspection": safe})
+    except Exception as e:
+        log.error(f"[API SPLINTER] {e}")
+        return JSONResponse({"inspection": []})
+app.get("/api/v34/hubble")
 def api_hubble():
-    with LOCK:
-        scores=STATE.get("hubble_scores",[])
-        if not scores:
-            scores=[{"symbol":"BTCUSDT","score":65,"ready":False,"ath_dd":-35,"rsi":42,"timewindow":datetime.now(ZoneInfo("Europe/Berlin")).strftime("%H:%M")}]
-        return JSONResponse(json_safe({"scores":sorted(scores, key=lambda x: x.get("score",0), reverse=True),"top_ready":[s for s in scores if s.get("ready")],"indices":STATE.get("hubble_indices",{}),"history_len":len(STATE.get("hubble_history",[]))}))
+    try:
+        with LOCK:
+            scores = STATE.get("hubble_scores",[])[:20]
+            safe = json_safe(scores)
+        return JSONResponse({"scores": safe, "indices": STATE.get("hubble_indices",{})})
+    except Exception as e:
+        log.error(f"[API HUBBLE] {e}")
+        return JSONResponse({"scores": [], "indices": {}})
+@app.get("/api/v34/debug")
 @app.get("/api/v34/debug")
 def api_debug():
-    with LOCK:
-        return JSONResponse(json_safe({
-            "boot":BOOT_TIME.isoformat(),
-            "uptime_sec":int((datetime.now(timezone.utc) - BOOT_TIME).total_seconds()),
-            "status":STATE.get("status"),
-            "hubble_cnt":len(STATE.get("hubble_scores",[])),
-            "queue_cnt":len(STATE.get("vorauswahl_queue",[])),
-            "cursor":SCAN_CURSOR,
-            "memory":{
-                "hubble_history":len(STATE.get("hubble_history",[])),
-                "turtle_history":len(STATE.get("turtle_history",[])),
-                "ath_memory":len(STATE.get("ath_memory",{})),
-                "rsi_history":len(STATE.get("rsi_history",{}))
-            },
-            "status_live":"V347_CLEAN_100_MEMORY LIVE"
-        }))
+    try:
+        with LOCK:
+            return JSONResponse(json_safe({
+                "queue_cnt": len(STATE.get("vorauswahl_queue",[])),
+                "cursor": STATE.get("turtle_cursor",0),
+                "hubble_cnt": len(STATE.get("hubble_scores",[])),
+                "paper_trades": STATE.get("paper_trades",[])[-10:],
+                "status": STATE.get("status","JAGT"),
+                "uptime_sec": int(time.time() - STATE.get("start_ts", time.time())),
+                "memory": {
+                    "hubble_history": len(STATE.get("hubble_history",[])),
+                    "turtle_history": len(STATE.get("vorauswahl_queue",[])),
+                    "ath_memory": len(STATE.get("ath_memory",{}))
+                }
+            }))
+    except Exception as e:
+        log.error(f"[API DEBUG] {e}")
+        return JSONResponse({"queue_cnt":0,"cursor":0,"status":"ERROR"})
 @app.get("/api/v34/moneyflow")
 def api_moneyflow():
     with LOCK:
