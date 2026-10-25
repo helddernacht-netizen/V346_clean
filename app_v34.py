@@ -310,7 +310,6 @@ def api_rina():
                 "status":"online"
             }))
     except Exception as e:
-        log.error(f"RINA {e}")
         return JSONResponse({"error":str(e),"top_ready":[],"scores":[],"active_freedom_windows":[]}, status_code=200)
 
 @app.get("/api/v34/turtles")
