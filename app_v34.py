@@ -353,16 +353,11 @@ scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5
 scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
 scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
 scheduler.start()
-
 def _boot_warmup():
     time.sleep(3)
-    try:
-        run_turtle_scan()
-        time.sleep(2)
-        run_hubble_inspection()
-        log.info("[BOOT] warmup done")
-    except Exception as e:
-        log.error(f"[BOOT] warmup fail {e}")
+    run_turtle_scan()
+    time.sleep(2)
+    run_hubble_inspection()
 
 Thread(target=_boot_warmup, daemon=True).start()
 update_status()
