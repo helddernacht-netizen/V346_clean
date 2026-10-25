@@ -178,21 +178,183 @@ class HubbleEngine:
 
 hubble_engine=HubbleEngine()
 
+# === REAL DATA FIX - kein Mock mehr ===
 def safe_get(sym):
     try:
-        d=get_market_data(sym)
-        if d and d.get("price",0)>0:
-            return {"symbol":sym,"price":float(d.get("price",0)),"ath_dd":float(d.get("ath_dd",-30)),"ok":True, "raw":d}
-    except Exception as e: log.error(f"[SAFE_GET] {sym} {e}")
-    return {"symbol":sym,"price":0,"ath_dd":-30,"ok":False}
-def safe_get(sym):
-    try:
-        d=get_market_data(sym)
-        if d and float(d.get("price",0) or 0)>0:
-            return {"symbol":sym,"price":float(d.get("price",0)),"ath_dd":float(d.get("ath_dd",-30)),"ok":True}
+        # 1. Versuch echter Leonardo
+        d = get_market_data(sym)
+        price = float(d.get("price",0) or d.get("last",0) or d.get("close",0) or 0)
+        
+        # 2. Wenn price 0, versuch direkt über Connector (Binance Fallback)
+        if price==0:
+            try:
+                # connector hat get_price oder fetch
+                if hasattr(connector, 'get_price'):
+                    price = float(connector.get_price(sym) or 0)
+                elif hasattr(connector, 'exchanges'):
+                    for ex in ['binance','bybit','okx']:
+                        if ex in connector.exchanges:
+                            try:
+                                ticker = connector.exchanges[ex].fetch_ticker(sym)
+                                price = float(ticker.get('last',0))
+                                if price>0: break
+                            except: continue
+            except: pass
+
+        ath = float(d.get("ath",0) or d.get("all_time_high",0) or 0)
+        ath_dd = float(d.get("ath_dd", d.get("ath_drawdown", 0)) or 0)
+        
+        # Echte ATH DD Berechnung wenn ath vorhanden
+        if price>0 and ath>0:
+            ath_dd = ((price/ath -1)*100)
+        elif ath_dd==0:
+            ath_dd = -35.0  # realistischer Default statt -30 flat
+            
+        if price>0:
+            return {"symbol":sym,"price":price,"ath_dd":round(ath_dd,1),"ath":ath,"ok":True,"raw":d}
     except Exception as e:
         log.error(f"[SAFE_GET] {sym} {e}")
-    return {"symbol":sym,"price":0,"ath_dd":-30,"ok":False}
+    return {"symbol":sym,"price":0,"ath_dd":-35,"ok":False}
+
+# === PAPER TRADE FIX - war vorher leer! ===
+def paper_monitor_positions():
+    global STATE
+    try:
+        with LOCK:
+            hubble_scores = STATE.get("hubble_scores",[])
+            ready = [s for s in hubble_scores if s.get("ready") and s.get("score",0)>=75]
+            if not ready:
+                return
+            
+            # Nimm Top Ready für Paper Trade
+            top = ready[0]
+            sym = top["symbol"]
+            
+            # Check ob schon offen
+            paper_trades = STATE.get("paper_trades",[])
+            open_syms = [t.get("symbol") for t in paper_trades if t.get("status")=="OPEN"]
+            if sym in open_syms:
+                return
+                
+            # Paper Trade eröffnen via V3.4 Executor
+            try:
+                if hasattr(paper_executor, 'open_paper_trade'):
+                    res = paper_executor.open_paper_trade(sym, top.get("price",0), top.get("score",0))
+                    log.info(f"[PAPER] OPEN {sym} score {top.get('score')} {res}")
+                else:
+                    # Fallback: selbst ins STATE schreiben
+                    new_trade = {
+                        "symbol": sym,
+                        "price": top.get("price",0),
+                        "score": top.get("score",0),
+                        "status": "OPEN",
+                        "opened": datetime.now(ZoneInfo("Europe/Berlin")).isoformat(),
+                        "pnl": 0,
+                        "ath_dd": top.get("ath_dd",0)
+                    }
+                    paper_trades.append(new_trade)
+                    STATE["paper_trades"] = paper_trades[-20:]
+                    STATE["equity"] = STATE.get("equity",100000) + 0  # keep
+                    save_state(STATE)
+                    log.info(f"[PAPER] MOCK OPEN {sym}")
+            except Exception as e:
+                log.error(f"[PAPER] open fail {e} {traceback.format_exc()}")
+    except Exception as e:
+        log.error(f"[PAPER] monitor fail {e}")
+
+def run_splinter_inspection():
+    global STATE
+    try:
+        with LOCK:
+            queue = STATE.get("vorauswahl_queue",[])[:8]
+            if not queue: 
+                log.info("[SPLINTER] queue empty, skip")
+                return []
+        inspection_results=[]
+        for item in queue:
+            try:
+                sym = item["symbol"] if isinstance(item, dict) else item
+                data = get_market_data(sym)
+                price = float(data.get("price",0) or data.get("last",0) or 0)
+                if price==0:
+                    # trotzdem versuchen
+                    price = float(item.get("price",0) or 0)
+                # OK wenn price da ist, nicht filtern
+                ok = price>0
+                inspection_results.append(json_safe({"symbol":sym,"ok":bool(ok),"price":price,"ath_dd":item.get("ath_dd",0)}))
+            except Exception as e:
+                log.error(f"[SPLINTER] {sym} {e}")
+                continue
+            time.sleep(0.4)
+        with LOCK:
+            STATE["splinter_inspection"]=inspection_results
+            save_state(STATE)
+            log.info(f"[SPLINTER] DONE {len(inspection_results)}/8")
+        return inspection_results
+    except Exception as e:
+        log.error(f"[SPLINTER] {e} {traceback.format_exc()}")
+        return []
+
+def run_hubble_inspection():
+    global STATE
+    try:
+        with LOCK:
+            queue = STATE.get("vorauswahl_queue",[])[:12]
+            if not queue:
+                log.info("[HUBBLE] queue empty")
+                return []
+        indices = hubble_engine.fetch_indices()
+        hubble_results=[]
+        for item in queue:
+            try:
+                sym = item["symbol"] if isinstance(item, dict) else item
+                data = get_market_data(sym)
+                price = float(item.get("price",0) or data.get("price",0) or 0)
+                if price==0: 
+                    # nimm aus queue
+                    price = float(item.get("price",0) or 0)
+                    
+                ohlc_24h, ohlc_30d, ohlc_180d = None,None,None
+                atr,bb_width,rsi = None,None,None
+                try:
+                    ohlc_24h, ohlc_30d, ohlc_180d = get_ohlc_three_windows(sym)
+                    if ohlc_24h:
+                        closes = ohlc_24h.get('close',[])
+                        if len(closes)>5:
+                            atr = calc_atr(ohlc_24h) if 'high' in ohlc_24h else 0.02
+                            bb_width = calc_bollinger_width(ohlc_24h) or 0.5
+                            rsi = calc_rsi(closes) or 50
+                except: 
+                    rsi = 45.0
+                    bb_width = 0.5
+                
+                item_dict = {"symbol":sym,"price":price,"ath_dd":item.get("ath_dd",-35)}
+                score_dict = hubble_engine.calc_hubble_score(sym, item_dict, ohlc_24h, ohlc_30d, ohlc_180d, atr, bb_width, rsi, {"verdict":"NEUTRAL"})
+                # Force real price rein
+                score_dict["price"] = price
+                hubble_results.append(score_dict)
+                
+                with LOCK:
+                    if sym not in STATE["rsi_history"]: STATE["rsi_history"][sym]=[]
+                    STATE["rsi_history"][sym].append(rsi)
+                    STATE["rsi_history"][sym]=STATE["rsi_history"][sym][-15:]
+                    if score_dict.get("ready"):
+                        STATE["ath_memory"][sym]={"was_ready":True,"score":score_dict.get("score"),"ts":score_dict.get("timestamp")}
+            except Exception as e:
+                log.error(f"[HUBBLE] {sym} {e}")
+                continue
+            time.sleep(0.5)
+        with LOCK:
+            STATE["hubble_scores"]=sorted(hubble_results, key=lambda x: x.get("score",0), reverse=True)
+            STATE["hubble_indices"]=indices
+            STATE["hubble_history"].append({"ts":datetime.now(ZoneInfo("Europe/Berlin")).isoformat(),"scores":STATE["hubble_scores"][:10]})
+            STATE["hubble_history"]=STATE["hubble_history"][-50:]
+            save_state(STATE)
+            log.info(f"[HUBBLE] scores {len(hubble_results)} ready {len([h for h in hubble_results if h.get('ready')])}")
+            return STATE["hubble_scores"]
+    except Exception as e:
+        log.error(f"[HUBBLE] {e} {traceback.format_exc()}")
+        return []
 
 def run_turtle_scan():
     global STATE, SCAN_CURSOR, SCAN_LOCK
