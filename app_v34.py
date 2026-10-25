@@ -200,7 +200,6 @@ def get_current_whitelist() -> List[str]:
 class PoolPayload(BaseModel):
     pool:List[str]
     details:Optional[List[dict]]=None
-    except Exception as e:
         log.error(f"[blacklist_time] {e}")
         return False,""
 
@@ -646,9 +645,6 @@ def scan_all():
 
 # === HEALTH FÜR UPTIMEROBOT - SUPER SCHNELL OHNE LOCK ===
 from datetime import datetime
-
-BOOT_TIME = datetime.utcnow()  # falls nicht schon vorhanden
-
 @app.get("/health")
 @app.get("/api/v34/health")
 @app.get("/ping")
