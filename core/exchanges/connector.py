@@ -19,7 +19,7 @@ class ExchangeConnector:
             try:
                 self.exchanges[name] = getattr(ccxt, name)({"enableRateLimit": True, "options": {"defaultType": "spot"}})
             except: pass
-        
+        self.exchanges[name].load_markets()
         # Kraken - Public oder Private je nach ENV
         try:
             k = os.getenv("KRAKEN_API_KEY","").strip()
@@ -138,3 +138,4 @@ class ExchangeConnector:
 
 # Global Singleton
 connector = ExchangeConnector()
+
