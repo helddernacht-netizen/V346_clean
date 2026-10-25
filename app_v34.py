@@ -55,6 +55,8 @@ try:
     from core.rina_rakete.hochsitz import HochsitzAnchor
     RINA_AVAILABLE = True
     log.info("[BOOT] Rina Rakete Module OK - Hirschgarten Prinzip")
+def is_blacklist_time():
+    return False,""
 except Exception as e:
     log.warning(f"[BOOT] Rina Fallback {e}")
     RINA_AVAILABLE = False
@@ -644,11 +646,6 @@ def scan_all():
     except Exception as e:
         log.error(f"[scan_all] {e} {traceback.format_exc()}")
         return json_safe({"status":"ERROR","reason":str(e),"results":[],"whitelist":get_current_whitelist()})
-
-# === HEALTH FÜR UPTIMEROBOT - SUPER SCHNELL OHNE LOCK ===
-from datetime import datetime
-BOOT_TIME = datetime.utcnow()
-
 @app.get("/health")
 @app.get("/api/v34/health")
 @app.get("/ping")
