@@ -416,5 +416,4 @@ def _boot_warmup():
         log.info("[BOOT] warmup done - queue + hubble gefüllt + memory aktiv")
     except Exception as e:
         log.error(f"[BOOT] warmup fail {e} {traceback.format_exc()}")
-
 Thread(target=_boot_warmup, daemon=True).start()
