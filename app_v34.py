@@ -347,6 +347,10 @@ scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coales
 scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30))
 scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
 scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
+scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")))
+scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30))
+scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
+scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
 scheduler.start()
 
 def _boot_warmup():
