@@ -74,8 +74,9 @@ def is_best_time():
     return True
 
 def load_universe_100_fixed():
+    # KEIN API Call beim Boot -> kein 429, schneller Start
     base = ["BTCUSDT","ETHUSDT","SOLUSDT","AVAXUSDT","LINKUSDT","ARBUSDT","WIFUSDT","PEPEUSDT","BONKUSDT","FLOKIUSDT","DOGEUSDT","SHIBUSDT","MATICUSDT","DOTUSDT","ADAUSDT","NEARUSDT","RNDRUSDT","FETUSDT","INJUSDT","SEIUSDT"]
-    return (base*5)
+    return base * 5
 
 UNIVERSE_100=load_universe_100_fixed()
 turtle_scanner=TurtleScanner(UNIVERSE_100)
