@@ -335,10 +335,17 @@ def api_debug():
 def api_moneyflow():
     with LOCK:
         return JSONResponse(json_safe({"indices":STATE.get("hubble_indices",{})}))
-@app.get("/api/v34/active")
-def api_active():
+@app.get("/api/v34/debug")
+def api_debug():
     with LOCK:
-        return JSONResponse(json_safe({"active_calls":STATE.get("open_positions",[])}))
+        return JSONResponse(json_safe({
+            "boot": BOOT_TIME.isoformat(),
+            "uptime_sec": int((datetime.now(timezone.utc) - BOOT_TIME).total_seconds()),
+            "queue_cnt": len(STATE.get("turtle_queue", [])),
+            "hubble_cnt": len(STATE.get("hubble_scores", [])),
+            "turtle_queue": STATE.get("turtle_queue", [])[:5],
+            "status": "V346_CLEAN LIVE"
+        }))
 
 scheduler=BackgroundScheduler(timezone=ZoneInfo("Europe/Berlin"), job_defaults={'misfire_grace_time': 900, 'coalesce': True, 'max_instances': 1})
 
