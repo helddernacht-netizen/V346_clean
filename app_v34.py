@@ -14,6 +14,7 @@ import traceback, json, numpy as np, time, requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from threading import Lock, Thread
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from apscheduler.schedulers.background import BackgroundScheduler
 BOOT_TIME = datetime.now(ZoneInfo("Europe/Berlin"))
 log.info(f"[BOOT] V3.4.6 FIXED BOOT={BOOT_TIME.isoformat()}")
@@ -72,13 +73,22 @@ def is_blacklist_time():
     return False,""
 def is_best_time():
     return True
-
 def load_universe_100_fixed():
-    # KEIN API Call beim Boot -> kein 429, schneller Start
-    base = ["BTCUSDT","ETHUSDT","SOLUSDT","AVAXUSDT","LINKUSDT","ARBUSDT","WIFUSDT","PEPEUSDT","BONKUSDT","FLOKIUSDT","DOGEUSDT","SHIBUSDT","MATICUSDT","DOTUSDT","ADAUSDT","NEARUSDT","RNDRUSDT","FETUSDT","INJUSDT","SEIUSDT"]
-    return base * 5
+    return [
+        "BTCUSDT","ETHUSDT","SOLUSDT","AVAXUSDT","LINKUSDT","ARBUSDT","WIFUSDT","PEPEUSDT","BONKUSDT","FLOKIUSDT",
+        "DOGEUSDT","SHIBUSDT","MATICUSDT","DOTUSDT","ADAUSDT","NEARUSDT","RNDRUSDT","FETUSDT","INJUSDT","SEIUSDT",
+        "SUIUSDT","APTUSDT","OPUSDT","ENAUSDT","JUPUSDT","PYTHUSDT","TIAUSDT","STRKUSDT","ZKUSDT","WUSDT",
+        "ONDOUSDT","RENDERUSDT","TAOUSDT","AKTUSDT","ARUSDT","FILUSDT","ATOMUSDT","LDOUSDT","ETCUSDT","XRPUSDT",
+        "LTCUSDT","BCHUSDT","UNIUSDT","AAVEUSDT","MKRUSDT","SNXUSDT","CRVUSDT","COMPUSDT","ENSUSDT","GRTUSDT",
+        "AGIXUSDT","OCEANUSDT","ORDIUSDT","BLURUSDT","DYDXUSDT","GMXUSDT","RDNTUSDT","STGUSDT","MAGICUSDT","WLDUSDT",
+        "KASUSDT","CFXUSDT","AGLDUSDT","IMXUSDT","FLOWUSDT","CHZUSDT","GALAUSDT","SANDUSDT","MANAUSDT","APEUSDT",
+        "AXSUSDT","GMTUSDT","LDOUSDT","SSVUSDT","FXSUSDT","BALUSDT","1INCHUSDT","ZRXUSDT","BATUSDT","ENJUSDT",
+        "THETAUSDT","FTMUSDT","ALGOUSDT","HBARUSDT","VETUSDT","TRXUSDT","EOSUSDT","XTZUSDT","EGLDUSDT","KAVAUSDT",
+        "ROSEUSDT","ONEUSDT","CELOUSDT","IOSTUSDT","ZILUSDT","QTUMUSDT","WAVESUSDT","ICXUSDT","ONTUSDT","KLAYUSDT"
+    ]
 
 UNIVERSE_100=load_universe_100_fixed()
+SCAN_CURSOR=0
 turtle_scanner=TurtleScanner(UNIVERSE_100)
 splinter_cell=SplinterCell()
 moneyflow_scanner=MoneyFlowScanner()
@@ -180,45 +190,72 @@ class HubbleEngine:
 
 hubble_engine=HubbleEngine()
 
+def safe_get(sym):
+    try:
+        d=get_market_data(sym)
+        if d and d.get("price",0)>0:
+            return {"symbol":sym,"price":float(d.get("price",0)),"ath_dd":float(d.get("ath_dd",-30)),"ok":True}
+    except Exception as e:
+        log.error(f"[SAFE_GET] {sym} {e}")
+    return {"symbol":sym,"price":0,"ath_dd":-30,"ok":False}
+
 def run_turtle_scan():
-    global STATE
+    global STATE, SCAN_CURSOR
     try:
         with LOCK:
-            update_status()
-            results=turtle_scanner.scan_once(get_market_data)
-            STATE["vorauswahl_queue"]=results[:20]
-            STATE["dynamic_whitelist"]=[r["symbol"] if isinstance(r, dict) else r for r in results[:20]]
+            batch=UNIVERSE_100[SCAN_CURSOR:SCAN_CURSOR+20]
+            SCAN_CURSOR=(SCAN_CURSOR+20) % 100
+            log.info(f"[TURTLE] SCAN cursor {SCAN_CURSOR} batch {batch[0]}..{batch[-1]}")
+        
+        results=[]
+        with ThreadPoolExecutor(max_workers=10) as ex:
+            futures={ex.submit(safe_get, s): s for s in batch}
+            for fut in as_completed(futures, timeout=20):
+                try:
+                    r=fut.result(timeout=4)
+                    if r["ok"]: results.append(r)
+                except: pass
+        
+        with LOCK:
+            old=STATE.get("vorauswahl_queue",[])
+            merged={r["symbol"]: r for r in old}
+            for r in results: merged[r["symbol"]]=r
+            STATE["vorauswahl_queue"]=list(merged.values())[:100]
+            STATE["dynamic_whitelist"]=list(merged.keys())[:20]
             save_state(STATE)
-            log.info(f"[TURTLE] queue {len(results)}")
-            return results
+            log.info(f"[TURTLE] DONE batch {len(results)}/20 total {len(STATE['vorauswahl_queue'])}")
+            return STATE["vorauswahl_queue"]
     except Exception as e:
-        log.error(f"[TURTLE] {e} {traceback.format_exc()}")
+        log.error(f"[TURTLE] FATAL {e} {traceback.format_exc()}")
         return []
 
 def run_splinter_inspection():
-    global STATE
-    try:
-        with LOCK:
-            queue=STATE.get("vorauswahl_queue",[])[:8]
-            inspection_results=[]
-            for item in queue:
-                try:
-                    sym=item["symbol"] if isinstance(item, dict) else item
-                    data=get_market_data(sym)
-                    if data.get("price",0)==0:
-                        continue
-                    ok,checks,meta=check_filters(sym, data, [])
-                    inspection_results.append(json_safe({"symbol":sym,"ok":bool(ok),"price":float(data.get("price",0))}))
-                except:
-                    continue
-                time.sleep(0.3)
-            STATE["splinter_inspection"]=inspection_results
-            save_state(STATE)
-            return inspection_results
-    except Exception as e:
-        log.error(f"[SPLINTER] {e}")
-        return []
-
+    return [] # erstmal aus, damit nichts blockiert
+    
+# def run_splinter_inspection():
+#    global STATE
+ #   try:
+  #      with LOCK:
+   #         queue=STATE.get("vorauswahl_queue",[])[:8]
+    #        inspection_results=[]
+     #       for item in queue:
+      #          try:
+       #             sym=item["symbol"] if isinstance(item, dict) else item
+        #            data=get_market_data(sym)
+         #           if data.get("price",0)==0:
+          #              continue
+           #         ok,checks,meta=check_filters(sym, data, [])
+            #        inspection_results.append(json_safe({"symbol":sym,"ok":bool(ok),"price":float(data.get("price",0))}))
+             #   except:
+              #      continue
+   #             time.sleep(0.3)
+    #        STATE["splinter_inspection"]=inspection_results
+     #       save_state(STATE)
+      #      return inspection_results
+   # except Exception as e:
+    #    log.error(f"[SPLINTER] {e}")
+     #   return []
+#
 def run_hubble_inspection():
     global STATE
     try:
