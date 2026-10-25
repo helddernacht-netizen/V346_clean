@@ -200,6 +200,7 @@ def get_current_whitelist() -> List[str]:
 class PoolPayload(BaseModel):
     pool:List[str]
     details:Optional[List[dict]]=None
+    def is_best_time() -> bool:
         log.error(f"[blacklist_time] {e}")
         return False,""
 
