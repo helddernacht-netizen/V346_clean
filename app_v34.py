@@ -341,17 +341,20 @@ def api_active():
         return JSONResponse(json_safe({"active_calls":STATE.get("open_positions",[])}))
 
 scheduler=BackgroundScheduler(timezone=ZoneInfo("Europe/Berlin"), job_defaults={'misfire_grace_time': 900, 'coalesce': True, 'max_instances': 1})
-scheduler.add_job(lambda: [update_status(), paper_monitor_positions(), monitor_positions(get_market_data, STATE)], 'interval', seconds=30, id='clan_monitor', coalesce=True, misfire_grace_time=300)
-scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")))
-scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30))
-scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
-scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
-scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")))
-scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30))
-scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
-scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
+
+# Bestehende Jobs killen falls noch im Speicher (verhindert ConflictingIdError)
+try:
+    scheduler.remove_all_jobs()
+except:
+    pass
+
+scheduler.add_job(lambda: [update_status(), paper_monitor_positions(), monitor_positions(get_market_data, STATE)], 'interval', seconds=30, id='clan_monitor', coalesce=True, misfire_grace_time=300, replace_existing=True)
+scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")), replace_existing=True)
+scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30), replace_existing=True)
+scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60), replace_existing=True)
+scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900, replace_existing=True)
 scheduler.start()
-from threading import Lock, Thread
+
 def _boot_warmup():
     time.sleep(3)
     try:
@@ -363,7 +366,3 @@ def _boot_warmup():
         log.error(f"[BOOT] warmup fail {e}")
 
 Thread(target=_boot_warmup, daemon=True).start()
-
-update_status()
-hubble_engine.fetch_indices()
-log.info("V3.4.6 CLEAN NO-BREAKER gestartet")
