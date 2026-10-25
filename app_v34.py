@@ -90,6 +90,7 @@ def load_universe_100_fixed():
 
 UNIVERSE_100=load_universe_100_fixed()
 SCAN_CURSOR=0
+SCAN_LOCK=False  # verhindert Doppel-Scan
 turtle_scanner=TurtleScanner(UNIVERSE_100)
 splinter_cell=SplinterCell()
 moneyflow_scanner=MoneyFlowScanner()
@@ -184,21 +185,38 @@ def safe_get(sym):
             return {"symbol":sym,"price":float(d.get("price",0)),"ath_dd":float(d.get("ath_dd",-30)),"ok":True, "raw":d}
     except Exception as e: log.error(f"[SAFE_GET] {sym} {e}")
     return {"symbol":sym,"price":0,"ath_dd":-30,"ok":False}
+def safe_get(sym):
+    try:
+        d=get_market_data(sym)
+        if d and float(d.get("price",0) or 0)>0:
+            return {"symbol":sym,"price":float(d.get("price",0)),"ath_dd":float(d.get("ath_dd",-30)),"ok":True}
+    except Exception as e:
+        log.error(f"[SAFE_GET] {sym} {e}")
+    return {"symbol":sym,"price":0,"ath_dd":-30,"ok":False}
+
 def run_turtle_scan():
-    global STATE, SCAN_CURSOR
+    global STATE, SCAN_CURSOR, SCAN_LOCK
+    if SCAN_LOCK:
+        log.info("[TURTLE] SKIP already scanning")
+        return STATE.get("vorauswahl_queue",[])
+    SCAN_LOCK=True
     try:
         with LOCK:
             batch=UNIVERSE_100[SCAN_CURSOR:SCAN_CURSOR+20]
             SCAN_CURSOR=(SCAN_CURSOR+20) % 100
-            log.info(f"[TURTLE] SCAN cursor {SCAN_CURSOR} batch {batch[0]}..{batch[-1]}")
+            log.info(f"[TURTLE] SCAN cursor {SCAN_CURSOR} batch {batch[0]}..{batch[-1]} len={len(batch)}")
         results=[]
-        with ThreadPoolExecutor(max_workers=10) as ex:
-            futures={ex.submit(safe_get, s): s for s in batch}
-            for fut in as_completed(futures, timeout=25):
-                try:
-                    r=fut.result(timeout=4)
-                    if r["ok"]: results.append(r)
-                except: pass
+        # SEQUENZIELL statt 10 Threads = 80% weniger RAM
+        for sym in batch:
+            try:
+                r=safe_get(sym)
+                if r["ok"]:
+                    results.append(r)
+                    log.info(f"[TURTLE] + {sym} price {r['price']}")
+                time.sleep(0.6)  # 0.6 Sek Pause = kein Rate Limit, wenig RAM
+            except Exception as e:
+                log.error(f"[TURTLE] {sym} err {e}")
+                continue
         with LOCK:
             old=STATE.get("vorauswahl_queue",[])
             merged={r["symbol"]: r for r in old}
@@ -208,14 +226,15 @@ def run_turtle_scan():
             STATE["vorauswahl_queue"]=list(merged.values())[:100]
             STATE["dynamic_whitelist"]=list(merged.keys())[:20]
             STATE["turtle_history"].append({"ts":datetime.now(ZoneInfo("Europe/Berlin")).isoformat(),"batch":batch,"found":len(results)})
-            STATE["turtle_history"]=STATE["turtle_history"][-100:]
+            STATE["turtle_history"]=STATE["turtle_history"][-30:]  # nur 30 statt 100 = RAM sparen
             save_state(STATE)
-            log.info(f"[TURTLE] DONE batch {len(results)}/20 total {len(STATE['vorauswahl_queue'])}")
+            log.info(f"[TURTLE] DONE batch {len(results)}/20 total {len(STATE['vorauswahl_queue'])} mem OK")
             return STATE["vorauswahl_queue"]
     except Exception as e:
         log.error(f"[TURTLE] FATAL {e} {traceback.format_exc()}")
         return []
-
+    finally:
+        SCAN_LOCK=False
 def run_splinter_inspection():
     global STATE
     try:
@@ -388,10 +407,11 @@ scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indic
 scheduler.start()
 
 def _boot_warmup():
-    time.sleep(3)
+    time.sleep(8)  # erst 8 Sek warten bis Uvicorn steht
     try:
-        run_turtle_scan()
-        time.sleep(2)
+        log.info("[BOOT] warmup start")
+        run_turtle_scan()  # nur EIN Scan
+        time.sleep(3)
         run_hubble_inspection()
         log.info("[BOOT] warmup done - queue + hubble gefüllt + memory aktiv")
     except Exception as e:
