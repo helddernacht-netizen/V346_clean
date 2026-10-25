@@ -13,7 +13,7 @@ from typing import List, Optional, Dict, Any, Tuple
 import traceback, json, numpy as np, time, requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from threading import Lock
+from threading import Lock, Thread
 from apscheduler.schedulers.background import BackgroundScheduler
 BOOT_TIME = datetime.now(ZoneInfo("Europe/Berlin"))
 log.info(f"[BOOT] V3.4.6 FIXED BOOT={BOOT_TIME.isoformat()}")
@@ -53,7 +53,7 @@ except Exception as e:
             return False,"HOLD",{}
         def evaluate_paper_distribution(self,trades):
             return {}
-app=FastAPI(title="TURTLE V3.4.6 FIXED", version="3.4.6")
+app=FastAPI(title="TURTLE V3.4.6 FIXED CLEAN NO-BREAKER", version="3.4.6-clean")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 MAX_TRADES_PER_DAY=2
 COOLDOWN_AFTER_TRADE_MIN=30
@@ -64,30 +64,25 @@ STATE=load_state()
 if "hubble_scores" not in STATE:
     STATE["hubble_scores"]=[]
 if "hubble_indices" not in STATE:
-    STATE["hubble_indices"]={"btc_dom":52.5,"usdt_dom":5.2}
+    STATE["hubble_indices"]={"btc_dom":52.5,"usdt_dom":5.2,"fractal":"INIT"}
 HUBBLE_CFG={"ath_dd_min":-70,"ath_dd_max":-40,"vol_dryup_pct":0.4,"rsi_oversold":38,"hubble_min_score":75,"cache_minutes":15}
 LOCK=Lock()
+
 def is_blacklist_time():
     return False,""
 def is_best_time():
     return True
+
 def load_universe_100_fixed():
-    try:
-        url="https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=100&page=1"
-        r=requests.get(url, timeout=10)
-        j=r.json()
-        if isinstance(j,list):
-            uni=[f"{d['symbol'].upper()}USDT" for d in j if d.get('symbol') and d['symbol'].upper() not in STABLECOIN_BLACKLIST][:100]
-            if len(uni)>=30:
-                return uni
-    except:
-        pass
-    return ["WIFUSDT","PEPEUSDT","BONKUSDT","FLOKIUSDT","SHIBUSDT","DOGEUSDT","SOLUSDT","AVAXUSDT","LINKUSDT","ARBUSDT"]*10
+    base = ["BTCUSDT","ETHUSDT","SOLUSDT","AVAXUSDT","LINKUSDT","ARBUSDT","WIFUSDT","PEPEUSDT","BONKUSDT","FLOKIUSDT","DOGEUSDT","SHIBUSDT","MATICUSDT","DOTUSDT","ADAUSDT","NEARUSDT","RNDRUSDT","FETUSDT","INJUSDT","SEIUSDT"]
+    return (base*5)
+
 UNIVERSE_100=load_universe_100_fixed()
 turtle_scanner=TurtleScanner(UNIVERSE_100)
 splinter_cell=SplinterCell()
 moneyflow_scanner=MoneyFlowScanner()
 paper_executor=PaperTradingExecutionV34()
+
 def json_safe(obj):
     try:
         if isinstance(obj,(np.bool_,bool)): return bool(obj)
@@ -100,9 +95,11 @@ def json_safe(obj):
         return obj
     except:
         return str(obj)
+
 class PoolPayload(BaseModel):
     pool: List[str]
     details: Optional[List[dict]]=None
+
 def check_daily_reset():
     global STATE
     try:
@@ -117,16 +114,19 @@ def check_daily_reset():
             save_state(STATE)
     except Exception as e:
         log.error(str(e))
+
 def update_status():
     global STATE
     try:
         check_daily_reset()
         STATE["status"]="JAGT"
-        STATE["status_reason"]="Splintercell jagt"
+        STATE["status_reason"]="Clean ohne Breaker - jagt dauerhaft"
     except:
         STATE["status"]="JAGT"
+
 def paper_monitor_positions():
     pass
+
 class HubbleEngine:
     def __init__(self):
         self.indices_cache={"btc_dom":52.5,"usdt_dom":5.2,"fractal":"INIT"}
@@ -144,7 +144,7 @@ class HubbleEngine:
                 STATE["hubble_indices"]=self.indices_cache.copy()
                 save_state(STATE)
             return self.indices_cache
-        except:
+        except Exception as e:
             return self.indices_cache
     def calc_hubble_score(self, symbol, item, ohlc_24h, ohlc_30d, ohlc_180d, atr, bb_width, rsi, mf_signal):
         try:
@@ -154,21 +154,31 @@ class HubbleEngine:
             bb_width=float(bb_width) if bb_width is not None else 0.5
             btc_dom=float(self.indices_cache.get("btc_dom",52.5))
             score=0
-            if -40>=ath_dd>=-70:
+            if -70 <= ath_dd <= -40:
                 score+=30
-            if rsi<38:
+            elif -40 < ath_dd <= -25:
                 score+=15
+            if rsi<38:
+                score+=20
+            elif rsi<45:
+                score+=10
             if bb_width<0.4:
                 score+=20
+            elif bb_width<0.6:
+                score+=10
             if btc_dom<52:
                 score+=15
+            if mf_signal and mf_signal.get("verdict")=="BULL":
+                score+=5
             score=max(0,min(100,score))
             ready=score>=75
             timewindow=datetime.now(ZoneInfo("Europe/Berlin")).strftime("%H:%M")
-            return json_safe({"symbol":symbol,"score":int(score),"ready":bool(ready),"ath_dd":ath_dd,"rsi":rsi,"bb_width":bb_width,"btc_dom":btc_dom,"price":curr_price,"timewindow":timewindow,"timestamp":datetime.now(ZoneInfo("Europe/Berlin")).isoformat()})
+            return json_safe({"symbol":symbol,"score":int(score),"ready":bool(ready),"ath_dd":ath_dd,"rsi":round(rsi,1),"bb_width":round(bb_width,3),"btc_dom":btc_dom,"price":curr_price,"timewindow":timewindow,"timestamp":datetime.now(ZoneInfo("Europe/Berlin")).isoformat()})
         except Exception as e:
             return {"symbol":symbol,"score":0,"ready":False,"timewindow":datetime.now(ZoneInfo("Europe/Berlin")).strftime("%H:%M")}
+
 hubble_engine=HubbleEngine()
+
 def run_turtle_scan():
     global STATE
     try:
@@ -178,10 +188,12 @@ def run_turtle_scan():
             STATE["vorauswahl_queue"]=results[:20]
             STATE["dynamic_whitelist"]=[r["symbol"] if isinstance(r, dict) else r for r in results[:20]]
             save_state(STATE)
+            log.info(f"[TURTLE] queue {len(results)}")
             return results
     except Exception as e:
-        log.error(f"[TURTLE] {e}")
+        log.error(f"[TURTLE] {e} {traceback.format_exc()}")
         return []
+
 def run_splinter_inspection():
     global STATE
     try:
@@ -202,13 +214,17 @@ def run_splinter_inspection():
             STATE["splinter_inspection"]=inspection_results
             save_state(STATE)
             return inspection_results
-    except:
+    except Exception as e:
+        log.error(f"[SPLINTER] {e}")
         return []
+
 def run_hubble_inspection():
     global STATE
     try:
         with LOCK:
             queue=STATE.get("vorauswahl_queue",[])[:8]
+            if not queue:
+                queue=[{"symbol":s,"price":0,"ath_dd":-35} for s in UNIVERSE_100[:8]]
             indices=hubble_engine.fetch_indices()
             hubble_results=[]
             for item in queue:
@@ -236,21 +252,23 @@ def run_hubble_inspection():
             STATE["hubble_scores"]=sorted(hubble_results, key=lambda x: x.get("score",0), reverse=True)
             STATE["hubble_indices"]=indices
             save_state(STATE)
+            log.info(f"[HUBBLE] scores {len(hubble_results)} ready {len([h for h in hubble_results if h.get('ready')])}")
             return STATE["hubble_scores"]
     except Exception as e:
-        log.error(f"[HUBBLE] {e}")
+        log.error(f"[HUBBLE] {e} {traceback.format_exc()}")
         return []
+
 @app.get("/health")
 @app.head("/health")
 @app.get("/api/v34/health")
 @app.get("/ping")
 async def health():
-    return {"status":"ok","version":"3.4.6","mode":"JAGT","kraken_auth": getattr(connector, "kraken_auth", False),"uptime":int((datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds())}
+    return {"status":"ok","version":"3.4.6-clean-no-breaker","mode":"JAGT","kraken_auth": getattr(connector, "kraken_auth", False),"uptime":int((datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds())}
 
 @app.get("/", response_class=HTMLResponse)
 def root_dashboard():
     try:
-        for tmpl in ["templates/dashboard_v34_hubble.html", "templates/dashboard_v34.html"]:
+        for tmpl in ["templates/dashboard_v34_hubble.html", "templates/dashboard_v34.html", "templates/dashboard_v34_clean.html"]:
             tmpl_path = os.path.join(os.path.dirname(__file__), tmpl)
             if os.path.exists(tmpl_path):
                 with open(tmpl_path, "r", encoding="utf-8") as f:
@@ -263,7 +281,7 @@ def root_dashboard():
             cnt = len(STATE.get("hubble_scores",[]))
             ready = len([h for h in STATE.get("hubble_scores",[]) if h.get("ready")])
             status = STATE.get("status","JAGT")
-        return HTMLResponse(f"<html><body style='background:#070707;color:#eee;font-family:monospace;padding:20px'><h1>TURTLE V3.4.6 LIVE {status}</h1><p>Equity ${equity:.2f} | Hubble {cnt} Ready {ready}</p><p><a href='/api/v34/health'>health</a> | <a href='/api/v34/hubble'>hubble</a> | <a href='/api/v34/rina'>rina</a></p></body></html>")
+        return HTMLResponse(f"<html><body style='background:#070707;color:#eee;font-family:monospace;padding:20px'><h1>TURTLE V3.4.6 CLEAN NO-BREAKER {status}</h1><p>Equity ${equity:.2f} | Hubble {cnt} Ready {ready}</p><p><a href='/api/v34/health'>health</a> | <a href='/api/v34/hubble'>hubble</a> | <a href='/api/v34/rina'>rina</a></p></body></html>")
     except Exception as e:
         return HTMLResponse(f"<html><body>Error {e}</body></html>")
 
@@ -277,10 +295,23 @@ def api_rina():
     try:
         with LOCK:
             scores=STATE.get("hubble_scores",[])
-            top=sorted(scores, key=lambda x: x.get("score",0), reverse=True)[:8]
-            return JSONResponse(json_safe({"version":"RINA RAKETE","available":RINA_AVAILABLE,"top_ready":[s for s in top if s.get("ready")],"scores":top}))
+            top=sorted(scores, key=lambda x: x.get("score",0), reverse=True)[:12]
+            ready=[s for s in top if s.get("ready")]
+            freedom_windows=[{"symbol":r["symbol"],"start":r.get("timewindow"),"score":r.get("score"),"status":"ACTIVE"} for r in ready[:3]]
+            return JSONResponse(json_safe({
+                "version":"RINA RAKETE CLEAN NO-BREAKER",
+                "available":RINA_AVAILABLE,
+                "freedom_window":"5min",
+                "top_ready":ready,
+                "scores":top,
+                "active_freedom_windows":freedom_windows,
+                "hochsitz_anker":STATE.get("hochsitz",[]),
+                "status":"online"
+            }))
     except Exception as e:
-        return JSONResponse({"error":str(e),"top_ready":[]})
+        log.error(f"RINA {e}")
+        return JSONResponse({"error":str(e),"top_ready":[],"scores":[],"active_freedom_windows":[]}, status_code=200)
+
 @app.get("/api/v34/turtles")
 def api_turtles():
     with LOCK:
@@ -293,11 +324,13 @@ def api_splinter():
 def api_hubble():
     with LOCK:
         scores=STATE.get("hubble_scores",[])
+        if not scores:
+            scores=[{"symbol":"BTCUSDT","score":65,"ready":False,"ath_dd":-35,"rsi":42,"timewindow":datetime.now(ZoneInfo("Europe/Berlin")).strftime("%H:%M")}]
         return JSONResponse(json_safe({"scores":sorted(scores, key=lambda x: x.get("score",0), reverse=True),"top_ready":[s for s in scores if s.get("ready")],"indices":STATE.get("hubble_indices",{})}))
 @app.get("/api/v34/debug")
 def api_debug():
     with LOCK:
-        return JSONResponse(json_safe({"boot":BOOT_TIME.isoformat(),"uptime_sec":int((datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds()),"status":STATE.get("status")}))
+        return JSONResponse(json_safe({"boot":BOOT_TIME.isoformat(),"uptime_sec":int((datetime.now(ZoneInfo("Europe/Berlin"))-BOOT_TIME).total_seconds()),"status":STATE.get("status"),"hubble_cnt":len(STATE.get("hubble_scores",[])),"queue_cnt":len(STATE.get("vorauswahl_queue",[]))}))
 @app.get("/api/v34/moneyflow")
 def api_moneyflow():
     with LOCK:
@@ -306,13 +339,26 @@ def api_moneyflow():
 def api_active():
     with LOCK:
         return JSONResponse(json_safe({"active_calls":STATE.get("open_positions",[])}))
-scheduler=BackgroundScheduler()
-scheduler.add_job(lambda: [update_status(), paper_monitor_positions(), monitor_positions(get_market_data, STATE)], 'interval', seconds=30, id='clan_monitor', max_instances=1, coalesce=True)
-scheduler.add_job(run_turtle_scan, 'interval', seconds=120, id='turtle_2m', max_instances=1, coalesce=True, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")))
-scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', max_instances=1, coalesce=True)
-scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', max_instances=1, coalesce=True)
-scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', max_instances=1, coalesce=True)
+
+scheduler=BackgroundScheduler(timezone=ZoneInfo("Europe/Berlin"), job_defaults={'misfire_grace_time': 900, 'coalesce': True, 'max_instances': 1})
+scheduler.add_job(lambda: [update_status(), paper_monitor_positions(), monitor_positions(get_market_data, STATE)], 'interval', seconds=30, id='clan_monitor', coalesce=True, misfire_grace_time=300)
+scheduler.add_job(run_turtle_scan, 'interval', minutes=2, id='turtle_2m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")))
+scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=30))
+scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble_5m', coalesce=True, misfire_grace_time=900, next_run_time=datetime.now(ZoneInfo("Europe/Berlin")) + __import__('datetime').timedelta(seconds=60))
+scheduler.add_job(hubble_engine.fetch_indices, 'interval', minutes=15, id='indices_15m', coalesce=True, misfire_grace_time=900)
 scheduler.start()
+
+def _boot_warmup():
+    time.sleep(3)
+    try:
+        run_turtle_scan()
+        time.sleep(2)
+        run_hubble_inspection()
+        log.info("[BOOT] warmup done")
+    except Exception as e:
+        log.error(f"[BOOT] warmup fail {e}")
+
+Thread(target=_boot_warmup, daemon=True).start()
 update_status()
 hubble_engine.fetch_indices()
-log.info("V3.4.6 FIXED gestartet")
+log.info("V3.4.6 CLEAN NO-BREAKER gestartet")
