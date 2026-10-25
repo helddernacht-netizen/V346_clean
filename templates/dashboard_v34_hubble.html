@@ -3,38 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TURTLE V3.4.6 HUBBLE + RINA RAKETE // HIRSCHGARTEN</title>
-<!-- NEU - Production Build, kein Warning mehr -->
+<title>TURTLE V3.4.7 HUBBLE + RINA RAKETE // HIRSCHGARTEN</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<style>
-  /* Hirschgarten Fix für deine grünen Boxen */
-  body{background:#070707;color:#e5e5e5}
-  .border-green-500{border-color:#22c55e}
-</style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TURTLE V3.4.6 HUBBLE + RINA RAKETE</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#070707;color:#c9c9c9;font-family:monospace;padding:12px}
-.border{border:1px solid #1f3d1f}
-.text-green-400{color:#4ade80}
-.bg-black{background:#000}
-.p-4{padding:1rem}
-.mb-4{margin-bottom:1rem}
-</style>
-</head>m"></script>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: { bg: '#070707', panel: '#111111', neon: '#39ff14', 'neon-dim': '#1a3a1a', text: '#eeeeee' },
-      fontFamily: { mono: ['JetBrains Mono','monospace'], share: ['Share Tech Mono','monospace'] }
-    }
-  }
-}
-</script>
 <style>
 *{box-sizing:border-box}
 body{background:#070707;color:#eee;font-family:'JetBrains Mono',monospace;margin:0;padding:0}
@@ -50,13 +21,12 @@ body{background:#070707;color:#eee;font-family:'JetBrains Mono',monospace;margin
 .live-dot{width:8px;height:8px;background:#39ff14;border-radius:50%;box-shadow:0 0 8px #39ff14;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 table{width:100%;border-collapse:collapse}
-th{font-family:'Share Tech Mono';font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#888;text-align:left;padding:8px 6px;border-bottom:1px solid #222;cursor:pointer;user-select:none}
+th{font-family:'Share Tech Mono';font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#888;text-align:left;padding:8px 6px;border-bottom:1px solid #222;cursor:pointer}
 td{padding:8px 6px;border-bottom:1px solid #1a1a1a;font-size:11px}
 tr:hover td{background:rgba(57,255,20,0.04)}
-.badge{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700;letter-spacing:0.05em}
+.badge{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700}
 .badge-ready{background:#39ff14;color:#000;box-shadow:0 0 6px #39ff14}
 .badge-wait{background:#222;color:#888;border:1px solid #333}
-.badge-discard{background:#1a0a0a;color:#ff3b30;border:1px solid #ff3b30}
 .badge-freedom{background:#ff7b00;color:#000;box-shadow:0 0 6px #ff7b00;animation:pulse 1s infinite}
 </style>
 </head>
@@ -65,33 +35,22 @@ tr:hover td{background:rgba(57,255,20,0.04)}
   <div class="flex items-center gap-3 min-w-0">
     <div class="w-9 h-9 rounded-full border-2 border-[#39ff14] flex items-center justify-center bg-black shadow-[0_0_10px_#39ff14]">🐢</div>
     <div class="min-w-0">
-      <div class="font-share text-[13px] md:text-[15px] font-bold text-[#39ff14] leading-tight tracking-wider">TURTLE V3.4.6 HUBBLE + RINA RAKETE // HIRSCHGARTEN</div>
-      <div class="text-[10px] text-[#39ff14]/70 font-mono flex flex-wrap gap-2">
-        <span id="utc">UTC --:--:--</span>
-        <span class="hidden md:inline">•</span>
-        <span class="hidden md:inline">Rina 5min Freiheit im Dickicht - Vertrauen statt Angst</span>
-      </div>
+      <div class="font-bold text-[13px] md:text-[15px] text-[#39ff14] tracking-wider">TURTLE V3.4.7 HUBBLE + RINA RAKETE // HIRSCHGARTEN</div>
+      <div class="text-[10px] text-[#39ff14]/70 flex gap-2"><span id="utc">UTC --:--:--</span><span>•</span><span>Rina 5min Freiheit - Vertrauen statt Angst</span></div>
     </div>
   </div>
-  <div class="flex items-center gap-2 md:gap-3 flex-wrap">
-    <div class="flex items-center gap-2 text-[11px] bg-black border border-[#39ff14]/30 rounded-full px-2.5 py-1">
-      <div class="live-dot"></div>
-      <span id="status">JAGT</span>
-      <span class="opacity-50">•</span>
-      <span id="equity">Lade...</span>
-    </div>
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 text-[11px] bg-black border border-[#39ff14]/30 rounded-full px-2.5 py-1"><div class="live-dot"></div><span id="status">JAGT</span><span>•</span><span id="equity">Lade...</span></div>
     <div class="text-[10px] bg-[#39ff14] text-black font-bold px-2 py-1 rounded-full" id="readyCount">0 READY</div>
     <div class="text-[10px] bg-[#ff7b00] text-black font-bold px-2 py-1 rounded-full" id="rinaCount">0 RINA</div>
     <div class="text-[10px] opacity-60" id="uptime">UP --</div>
-    <button onclick="manualRefresh()" class="text-[10px] border border-[#39ff14]/40 px-2.5 py-1 rounded hover:bg-[#39ff14] hover:text-black transition">↻ REFRESH</button>
+    <button onclick="manualRefresh()" class="text-[10px] border border-[#39ff14]/40 px-2.5 py-1 rounded hover:bg-[#39ff14] hover:text-black">↻ REFRESH</button>
   </div>
 </header>
-
 <main class="p-2 md:p-3 max-w-[1600px] mx-auto space-y-3">
-  <!-- ROW0: RINA RAKETE - FREEDOM & RECALL - Hirschgarten -->
-  <div class="neon-border neon-corner bg-[#111111] rounded p-3 border-[#ff7b00]/50" style="border-color: rgba(255,123,0,0.4)">
+  <div class="neon-border neon-corner bg-[#111111] rounded p-3" style="border-color: rgba(255,123,0,0.4)">
     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <h2 class="font-share text-[12px] tracking-widest text-[#ff7b00]">🐕‍🦺 RINA RAKETE - FREEDOM & RECALL - HIRSCHGARTEN BERLIN</h2>
+      <h2 class="text-[12px] tracking-widest text-[#ff7b00]">🐕‍🦺 RINA RAKETE - FREEDOM & RECALL - HIRSCHGARTEN BERLIN</h2>
       <div class="flex items-center gap-2 text-[9px]">
         <span class="opacity-60">Freedom Window:</span>
         <span id="freedomConfig" class="bg-[#ff7b00] text-black px-2 py-0.5 rounded-full font-bold">5min</span>
@@ -101,515 +60,110 @@ tr:hover td{background:rgba(57,255,20,0.04)}
         <span class="opacity-50" id="rinaTime">--:--:--</span>
       </div>
     </div>
-    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
-      <!-- Active Freedom Windows -->
       <div class="bg-[#070707] border border-[#222] rounded p-2.5">
-        <div class="text-[10px] tracking-widest text-[#ff7b00] mb-2">🌲 AKTIVE FREEDOM WINDOWS - IM DICKICHT</div>
-        <div id="rinaActive" class="space-y-1.5 max-h-[200px] overflow-y-auto text-[11px]">
-          <div class="opacity-50 py-6 text-center text-[11px]">Keine aktiven Freedom Windows - Alle Pfade klar - Kein Dickicht - Rina schnüffelt nicht</div>
-        </div>
-        <div class="mt-2 text-[9px] opacity-40">Freedom = kein SL, kein Panic, nur loggen - Vertrauen dass Struktur zurückfindet</div>
+        <div class="text-[10px] tracking-widest text-[#ff7b00] mb-2">🌲 AKTIVE FREEDOM WINDOWS</div>
+        <div id="rinaActive" class="space-y-1.5 max-h-[200px] overflow-y-auto text-[11px]"><div class="opacity-50 py-6 text-center">Keine aktiven Windows - Alle Pfade klar</div></div>
       </div>
-      
-      <!-- Hochsitz Anchors -->
       <div class="bg-[#070707] border border-[#222] rounded p-2.5">
-        <div class="text-[10px] tracking-widest text-[#39ff14] mb-2">🏔️ HOCHSITZ ANKER - ZUHAUSE / 100 WALLET</div>
-        <div id="rinaHochsitz" class="space-y-1.5 max-h-[200px] overflow-y-auto text-[11px]">
-          <div class="opacity-50 py-6 text-center text-[11px]">Keine Hochsitz Anker - Warte auf grüne Kerze mit Volumen - Letztes sauberes High</div>
-        </div>
-        <div class="mt-2 text-[9px] opacity-40">Anker = letzte grüne Kerze mit Volumen / Portfolio High / 100 Wallet - innerer Sog</div>
+        <div class="text-[10px] tracking-widest text-[#39ff14] mb-2">🏔️ HOCHSITZ ANKER</div>
+        <div id="rinaHochsitz" class="space-y-1 text-[11px]"></div>
+        <div class="mt-2 text-[9px] opacity-40" id="memoryInfo">Memory: 0 history</div>
       </div>
-      
-      <!-- Reinforced Paths + Logs -->
       <div class="bg-[#070707] border border-[#222] rounded p-2.5">
-        <div class="text-[10px] tracking-widest text-[#39ff14] mb-2">📖 VERSTÄRKTE PFADE - RINA FOUND THE WAY</div>
-        <div id="rinaReinforced" class="space-y-1 max-h-[200px] overflow-y-auto text-[10px]">
-          <div class="opacity-50 py-6 text-center text-[11px]">Noch keine verstärkten Pfade - Warte bis Rina den Weg zurück findet</div>
-        </div>
-        <div class="mt-2 p-1.5 bg-[#111] rounded text-[9px] leading-relaxed" id="rinaStory">
-          <span class="text-[#ff7b00]">Hirschgarten Prinzip:</span> Rina bekommt 5min komplette Freiheit im Dickicht und kommt von selbst zurück. Kein Eingriff. Vertrauen statt Angst. Wie Rudi im Wald wenn Rina im Dickicht ist - atmet durch.
-        </div>
-      </div>
-    </div>
-    
-    <div class="mt-3 flex flex-wrap gap-2 text-[9px] opacity-60">
-      <span>🌲 Dickicht = ATR high + unklare Struktur + kein clean Fractal + P/L &lt;0</span>
-      <span>•</span>
-      <span>🏔️ Hochsitz = letzte grüne Kerze mit Volumen / Portfolio High</span>
-      <span>•</span>
-      <span>🚫 Anti-Panic = block_user_intervention() während Freedom Window - rudi_atmet_durch</span>
-      <span>•</span>
-      <span>🔔 Soft Recall = nach Ablauf kleine Anpassung Richtung Hochsitz, kein harter Cut</span>
-    </div>
-  </div>
-
-  <!-- ROW1: 4 Cards DICHT -->
-  <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">MONEYFLOW - BED4 REAL API</div>
-      <div class="grid grid-cols-3 gap-2 text-[11px]">
-        <div><div class="opacity-50 text-[9px]">INFLOW</div><div class="text-[#39ff14] font-bold" id="mfInflow">Lade...</div></div>
-        <div><div class="opacity-50 text-[9px]">OUTFLOW</div><div class="text-[#ff3b30] font-bold" id="mfOutflow">Lade...</div></div>
-        <div><div class="opacity-50 text-[9px]">NET</div><div class="font-bold" id="mfNet">Lade...</div></div>
-      </div>
-      <div class="mt-2 text-[10px] opacity-70" id="mfVerdict">Lade MoneyFlow von /api/v34/moneyflow...</div>
-      <div class="mt-1 text-[9px] opacity-50" id="mfDetails">Kein Mock - echte API Daten</div>
-    </div>
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">INDICES - COINGECKO LIVE 15M</div>
-      <div class="grid grid-cols-2 gap-2 text-[11px]">
-        <div><div class="opacity-50 text-[9px]">BTC.D</div><div class="font-bold" id="btcDom">Lade...</div><div class="text-[9px] opacity-60" id="btcChange">--</div></div>
-        <div><div class="opacity-50 text-[9px]">USDT.D</div><div class="font-bold" id="usdtDom">Lade...</div><div class="text-[9px] opacity-60">Live</div></div>
-      </div>
-      <div class="mt-2 text-[10px] leading-tight" id="fractal">Lade Indices von /api/v34/hubble...</div>
-    </div>
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">QUEUE COUNT - TURTLE LIVE 2MIN</div>
-      <div class="text-[20px] font-bold" id="queueCount">Lade...</div>
-      <div class="text-[10px] opacity-70" id="queueUniverse">Lade von /api/v34/turtles...</div>
-      <div class="mt-2 text-[9px] opacity-50">Holz steht • 120s Scan • Kein Mock</div>
-      <div class="mt-1 text-[9px] font-bold text-[#39ff14]" id="lastScan">Warte auf Scan...</div>
-    </div>
-  </div>
-
-  <!-- ROW2: HUBBLE TABLE -->
-  <div class="neon-border neon-corner bg-[#111111] rounded p-3 overflow-hidden">
-    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-      <div class="flex items-center gap-3">
-        <h2 class="font-share text-[12px] tracking-widest text-[#39ff14]">🔭 HUBBLE TABLE - LIVE 0-100 SCORE - KEIN MOCK</h2>
-        <span class="text-[9px] bg-[#39ff14] text-black px-2 py-0.5 rounded-full font-bold" id="hubbleMeta">Lade...</span>
-      </div>
-      <div class="flex items-center gap-2 text-[9px]">
-        <span class="opacity-60">Sort:</span>
-        <button onclick="sortTable('score')" class="border border-[#39ff14]/30 px-2 py-1 rounded hover:bg-[#39ff14]/20">SCORE ↓</button>
-        <button onclick="sortTable('ath_dd')" class="border border-[#222] px-2 py-1 rounded hover:bg-[#222]">ATH DD</button>
-        <button onclick="sortTable('rsi')" class="border border-[#222] px-2 py-1 rounded hover:bg-[#222]">RSI</button>
-        <span class="opacity-50" id="hubbleTime">Lade...</span>
-      </div>
-    </div>
-    <div class="overflow-x-auto -mx-3 px-3">
-      <table id="hubbleTable">
-        <thead>
-          <tr>
-            <th onclick="sortTable('symbol')">Symbol</th>
-            <th onclick="sortTable('score')" class="min-w-[140px]">Score 0-100</th>
-            <th onclick="sortTable('ath_dd')">ATH DD%</th>
-            <th onclick="sortTable('days_down_proxy')">Days Down</th>
-            <th>BB Width</th>
-            <th onclick="sortTable('rsi')">RSI</th>
-            <th>BTC.D</th>
-            <th>MF Verdict</th>
-            <th class="min-w-[200px]">Fractal Story</th>
-            <th>Ready</th>
-            <th>Turtle</th>
-          </tr>
-        </thead>
-        <tbody id="hubbleBody">
-          <tr><td colspan="11" class="text-center opacity-50 py-8">Lade Hubble Scores von /api/v34/hubble alle 30s • Echte API, kein Mock, keine fixen Platzhalter • Warte auf Daten...</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="mt-3 p-2 bg-[#070707] border border-[#222] rounded text-[10px] leading-relaxed" id="storyBox">
-      <span class="text-[#39ff14]">Birger Schäfermeier:</span> "Nicht das beste Produkt, sondern die beste Geschichte gewinnt." → Lade echte Story von API...
-    </div>
-  </div>
-
-  <!-- ROW3: Turtle + Splinter + Open -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-3">
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">🐢 TURTLE QUEUE - TOP20 LIVE - KEIN MOCK</div>
-      <div id="turtleQueue" class="space-y-1 max-h-[320px] overflow-y-auto pr-1 text-[11px]">Lade echte Queue von /api/v34/turtles... Keine fixen Werte, nur API Daten</div>
-      <div class="text-[9px] opacity-50 mt-2" id="turtleFooter">Lade...</div>
-    </div>
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">🥷 SPLINTER INSPECTION - LIVE BED1/BED2/BED4</div>
-      <div id="splinterList" class="space-y-1 max-h-[320px] overflow-y-auto pr-1 text-[11px]">Lade echte Inspection von /api/v34/splinter... Kein Mock</div>
-      <div class="text-[9px] opacity-50 mt-2">Bed1 Trend relativ + Bed4 MoneyFlow + Bed2 SL relativ + Bed3 Hold • Live API</div>
-    </div>
-    <div class="neon-border neon-corner bg-[#111111] rounded p-3">
-      <div class="font-share text-[10px] tracking-widest text-[#39ff14] mb-2">🔥 OPEN POSITIONS - PAPER LIVE</div>
-      <div class="text-[9px] opacity-60 mb-2">Echte Positionen von /api/v34/active • Kein Mock • Rina Freedom Window blockt Panic</div>
-      <div id="openPositions" class="space-y-1 max-h-[320px] overflow-y-auto pr-1 text-[11px]">Lade echte Positionen von /api/v34/active... Keine Platzhalter</div>
-      <div class="mt-3 p-2 bg-[#1a0f0f] border border-[#ff3b30]/30 rounded text-[10px]">
-        <div class="text-[#ff3b30] font-bold">🧙 WIZDRAW - CLOSE ALL</div>
-        <div class="opacity-70">Market Close • Prüft Rina Block - rudi_atmet_durch</div>
-        <button onclick="wizdrawCloseAll()" class="mt-2 w-full bg-[#ff3b30] text-black font-bold py-1.5 rounded text-[11px] hover:bg-[#ff5a4f]">CLOSE ALL (prüft Rina Block)</button>
+        <div class="text-[10px] tracking-widest text-[#888] mb-2">📊 TOP READY (Hubble >=75)</div>
+        <div id="rinaReady" class="space-y-1 text-[11px]"></div>
       </div>
     </div>
   </div>
-
-  <footer class="neon-border bg-[#111111] rounded p-3 flex flex-wrap gap-2 items-center justify-between text-[10px]">
-    <div class="flex flex-wrap gap-2 items-center">
-      <span class="opacity-50">DEBUG DICHT - KEIN MOCK:</span>
-      <a href="/api/v34/hubble" target="_blank" class="border border-[#39ff14]/30 px-2 py-1 rounded hover:bg-[#39ff14] hover:text-black">/api/v34/hubble</a>
-      <a href="/api/v34/rina" target="_blank" class="border border-[#ff7b00]/50 px-2 py-1 rounded hover:bg-[#ff7b00] hover:text-black">/api/v34/rina</a>
-      <a href="/api/v34/rina/freedom" target="_blank" class="border border-[#222] px-2 py-1 rounded">/api/v34/rina/freedom</a>
-      <a href="/api/v34/debug" target="_blank" class="border border-[#222] px-2 py-1 rounded">/api/v34/debug</a>
-      <a href="/api/v34/health" target="_blank" class="border border-[#222] px-2 py-1 rounded">/api/v34/health</a>
-      <span class="opacity-30">•</span>
-      <span class="opacity-60 hidden md:inline">Rina Rakete: Statt Angst im Dickicht, Vertrauen + Anker. Wie im Hirschgarten.</span>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+    <div class="neon-border bg-[#111111] rounded p-3">
+      <div class="flex justify-between mb-2"><h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest">🐢 TURTLE SCANNER (100 COINS) - V3.4.7 ROTIEREND</h2><span class="text-[10px] opacity-60"><span id="queue-count">0</span> Coins • Cursor <span id="cursor">0</span></span></div>
+      <div id="turtle-queue" class="space-y-1 text-[11px] max-h-[380px] overflow-y-auto">Warte auf Scan... 20 alle 3 Min, nach 15 Min alle 100</div>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="opacity-50">V3.4.6 HUBBLE+RINA</span>
-      <span class="bg-[#39ff14] text-black px-2 py-0.5 rounded-full font-bold text-[9px]">DICHT</span>
-      <span class="bg-[#ff7b00] text-black px-2 py-0.5 rounded-full font-bold text-[9px]">RINA</span>
-      <span class="opacity-30">Berlin Hirschgarten</span>
+    <div class="neon-border bg-[#111111] rounded p-3">
+      <h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest mb-2">🥷 SPLINTERZELLE BESICHTIGUNG (8 Coins)</h2>
+      <div id="splinter-list" class="space-y-1 text-[11px]"></div>
+      <div class="mt-3 text-[10px]">Threat Level: <span id="threat" class="text-green-400">LOW</span><div class="w-full h-1 bg-[#222] mt-1 rounded"><div class="h-1 bg-[#39ff14] w-3/4"></div></div></div>
     </div>
-  </footer>
+  </div>
 
-  <div class="text-[8px] opacity-20 text-center pb-4 font-share">
-    TURTLE V3.4.6 HUBBLE + RINA RAKETE // HIRSCHGARTEN • HOLZ STEHT • GELÄNDER SAFE • KEIN JAMES WEBB • KEIN MOCK • MASCHINENCODE • bg #070707 accent #39ff14 #ff7b00 • Rina 5min Freiheit im Dickicht kommt selbst zurück - Vertrauen statt Angst - rudi_atmet_durch
+  <div class="neon-border bg-[#111111] rounded p-3">
+    <h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest mb-2">🔭 HUBBLE SCORE - VOLUMEN DRYUP + RSI + ATH DD + GEDÄCHTNIS</h2>
+    <div class="overflow-x-auto">
+      <table><thead><tr><th>SYM</th><th>SCORE</th><th>READY</th><th>ATH DD</th><th>RSI</th><th>BB</th><th>PRICE</th><th>TIME</th></tr></thead><tbody id="hubble-body"><tr><td colspan="8" class="opacity-50 text-center py-6">Lade Hubble...</td></tr></tbody></table>
+    </div>
   </div>
 </main>
 
 <script>
-let hubbleData = [];
-let sortKey = 'score';
-let sortDesc = true;
-let lastCalls = [];
+// === SAFE SET - FIX für dein innerText null Bug ===
+function safeSet(id, txt){try{let el=document.getElementById(id); if(el) el.innerText=txt;}catch(e){}}
+function safeHtml(id, html){try{let el=document.getElementById(id); if(el) el.innerHTML=html;}catch(e){}}
 
-function fmtPrice(p){
-  if(p===null || p===undefined || isNaN(p)) return "Lade...";
-  if(p<0.01) return "$"+p.toFixed(6);
-  if(p<1) return "$"+p.toFixed(4);
-  return "$"+p.toFixed(2);
-}
+function setFreedomWindow(m){safeSet('freedomConfig', m+'min'); localStorage.setItem('freedom', m);}
 
-function scoreColor(score){
-  if(score>=75) return '#39ff14';
-  if(score>=50) return '#ffeb3b';
-  return '#ff3b30';
-}
+async function manualRefresh(){await loadAll();}
 
-function scoreBg(score){
-  if(score>=75) return 'bg-[#39ff14]';
-  if(score>=50) return 'bg-[#ffeb3b]';
-  return 'bg-[#ff3b30]';
-}
-
-function sortTable(key){
-  if(sortKey===key) sortDesc=!sortDesc;
-  else {sortKey=key; sortDesc=true;}
-  renderHubble();
-}
-
-function renderHubble(){
-  const tbody = document.getElementById('hubbleBody');
-  if(!hubbleData.length){
-    tbody.innerHTML = `<tr><td colspan="11" class="text-center opacity-50 py-8">Keine Hubble Scores von API - Warte auf 5min Deep Dive Top8 aus Queue - Echte Daten von /api/v34/hubble, kein Mock, keine fixen Platzhalter - Wenn leer, dann API liefert leer, nicht Mock</td></tr>`;
-    return;
-  }
-  let sorted = [...hubbleData].sort((a,b)=>{
-    let av = a[sortKey] ?? 0;
-    let bv = b[sortKey] ?? 0;
-    if(typeof av==='string') av=av.toLowerCase();
-    if(typeof bv==='string') bv=bv.toLowerCase();
-    if(av<bv) return sortDesc?1:-1;
-    if(av>bv) return sortDesc?-1:1;
-    return 0;
-  });
-  let html='';
-  sorted.forEach(h=>{
-    const col = scoreColor(h.score);
-    const readyBadge = h.ready ? `<span class="badge badge-ready">READY ${h.score}</span>` : (h.score>=50 ? `<span class="badge badge-wait">WAIT ${h.score}</span>` : `<span class="badge badge-discard">DISCARD</span>`);
-    html+=`<tr>
-      <td><b class="text-[#39ff14]">${(h.symbol||'Unbekannt').replace('USDT','')}</b><div class="text-[9px] opacity-50">${h.symbol||'--'}</div></td>
-      <td>
-        <div class="flex items-center gap-2">
-          <div class="progress flex-1 min-w-[60px]"><div class="progress-fill ${scoreBg(h.score)}" style="width:${h.score}%"></div></div>
-          <span style="color:${col}" class="font-bold text-[11px] min-w-[24px]">${h.score}</span>
-        </div>
-      </td>
-      <td style="color:${h.ath_dd<-40?'#39ff14':'#888'}">${h.ath_dd!==undefined?h.ath_dd.toFixed(1)+'%':'Lade...'}</td>
-      <td>${h.days_down_proxy!==undefined?h.days_down_proxy+'d':'--'}</td>
-      <td>${h.bb_width!==undefined?h.bb_width.toFixed(3):'--'}</td>
-      <td style="color:${(h.rsi||50)<38?'#39ff14':(h.rsi||50)<45?'#ffeb3b':'#888'}">${h.rsi!==undefined?h.rsi.toFixed(0):'--'}</td>
-      <td>${h.btc_dom!==undefined?h.btc_dom.toFixed(1)+'%':'--'}</td>
-      <td><span class="text-[10px] ${h.mf_verdict==='GUT'?'text-[#39ff14]':h.mf_verdict==='VORSICHT'?'text-[#ff3b30]':'opacity-70'}">${h.mf_verdict||'Lade...'}</span></td>
-      <td><div class="text-[10px] leading-tight max-w-[220px] truncate" title="${(h.fractal||'Lade...').replace(/"/g,'&quot;')}">${h.fractal||'Lade...'}</div><div class="text-[8px] opacity-40 truncate max-w-[220px]">${h.short_story||''}</div></td>
-      <td>${readyBadge}</td>
-      <td><span class="text-[10px] opacity-60">${h.turtle_score!==undefined?h.turtle_score:'--'}</span><div class="text-[9px] ${ (h.change_24h||0)<0?'text-[#39ff14]':'opacity-50'}">${h.change_24h!==undefined?h.change_24h.toFixed(1)+'%':'--'}</div></td>
-    </tr>`;
-  });
-  tbody.innerHTML=html;
-  if(sorted.length){
-    let top = sorted[0];
-    document.getElementById('storyBox').innerHTML = `<span class="text-[#39ff14]">📖 Beste Geschichte gewinnt - Top von API:</span> ${top.story||top.short_story||'Lade Story von API...'} <span class="opacity-50 ml-2">• ${top.symbol} Score ${top.score} • ${top.fractal||''}</span>`;
-  }
-}
-
-async function fetchReal(url){
-  // KEIN MOCK - nur echte API, kein Fallback mit fixen Werten
-  try{
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status+' - echte API Fehler, kein Mock');
-    const j = await r.json();
-    console.log('[REAL API]', url, j);
-    return j;
-  }catch(e){
-    console.error('[REAL API FAIL]', url, e, '- Kein Mock, zeige Lade... / Fehler menschenlesbar');
-    throw e;
-  }
-}
-
-async function loadHubble(){
-  try{
-    const j = await fetchReal('/api/v34/hubble');
-    hubbleData = j.scores||[];
-    document.getElementById('hubbleMeta').innerText = `${j.count||hubbleData.length} scores • ${j.ready_count||0} READY • Live API`;
-    document.getElementById('hubbleTime').innerText = new Date(j.timestamp||Date.now()).toLocaleTimeString() + ' Live';
-    document.getElementById('readyCount').innerText = `${j.ready_count||0} READY`;
-    document.getElementById('btcDom').innerText = j.indices?.btc_dom!==undefined ? j.indices.btc_dom+'%' : 'Lade...';
-    document.getElementById('usdtDom').innerText = j.indices?.usdt_dom!==undefined ? j.indices.usdt_dom+'%' : 'Lade...';
-    document.getElementById('btcChange').innerText = j.indices?.btc_dom_change!==undefined ? (j.indices.btc_dom_change>0?'+':'')+j.indices.btc_dom_change+'%' : '--';
-    document.getElementById('fractal').innerText = j.indices?.fractal||'Lade fractal von API...';
-    document.getElementById('fractal').style.color = (j.indices?.fractal||'').includes('ALT PUMP') ? '#39ff14' : (j.indices?.fractal||'').includes('VORSICHT')||(j.indices?.fractal||'').includes('HIGH') ? '#ff3b30' : '#eee';
-    renderHubble();
-  }catch(e){
-    document.getElementById('hubbleMeta').innerText = 'API Fehler - kein Mock - '+e.message;
-    document.getElementById('hubbleBody').innerHTML = `<tr><td colspan="11" class="text-center py-8"><div class="text-[#ff3b30]">API /api/v34/hubble nicht erreichbar - kein Mock, keine fixen Platzhalter</div><div class="text-[11px] opacity-60 mt-2">Fehler: ${e.message} - Prüfe ob Backend läuft - Echte Daten nur von API</div></td></tr>`;
-  }
-}
-
-async function loadRina(){
-  try{
-    const j = await fetchReal('/api/v34/rina');
-    document.getElementById('rinaCount').innerText = `${j.active_freedom_windows?.length||0} RINA`;
-    document.getElementById('freedomConfig').innerText = `${j.freedom_window_min||5}min`;
-    document.getElementById('rinaTime').innerText = new Date().toLocaleTimeString();
-    
-    // Active Freedom Windows
-    const activeDiv = document.getElementById('rinaActive');
-    const active = j.active_freedom_windows||[];
-    if(!active.length){
-      activeDiv.innerHTML = '<div class="opacity-50 py-6 text-center text-[11px]">Keine aktiven Freedom Windows - Alle Pfade klar - Kein Dickicht - Rina schnüffelt nicht - Echte API Daten</div>';
-    } else {
-      let html='';
-      active.forEach(w=>{
-        html+=`<div class="border border-[#ff7b00]/30 rounded p-2 bg-[#1a0f0a]">
-          <div class="flex justify-between items-center"><b class="text-[#ff7b00]">${w.symbol.replace('USDT','')}</b><span class="badge badge-freedom">${w.status}</span></div>
-          <div class="text-[10px] mt-1">⏱️ ${w.elapsed_min?.toFixed(1)||0} / ${j.freedom_window_min||5}min • ⏳ noch ${w.time_left_min?.toFixed(1)||0}min • 📏 Distanz ${w.distance_to_hochsitz?.toFixed(2)||0}% zum Hochsitz</div>
-          <div class="text-[9px] opacity-70 mt-1">🧭 Pull ${((w.pull_strength||0)*100).toFixed(0)}% zum Hochsitz $${w.hochsitz_price?.toFixed(4)||'--'} • ${w.thicket_reason||''}</div>
-          <div class="text-[9px] opacity-50">P/L ${w.pnl_pct?.toFixed(2)||0}% - ${w.status} - Rudi atmet durch</div>
-        </div>`;
-      });
-      activeDiv.innerHTML = html;
-    }
-    
-    // Hochsitz Anchors
-    try{
-      const hJ = await fetchReal('/api/v34/rina/hochsitz');
-      const hochsitzDiv = document.getElementById('rinaHochsitz');
-      const anchors = hJ.anchors||{};
-      const keys = Object.keys(anchors);
-      if(!keys.length){
-        hochsitzDiv.innerHTML = '<div class="opacity-50 py-6 text-center text-[11px]">Keine Hochsitz Anker von API - Warte auf grüne Kerze mit Volumen - Echte API /api/v34/rina/hochsitz</div>';
-      } else {
-        let html='';
-        keys.slice(0,10).forEach(k=>{
-          const a = anchors[k];
-          html+=`<div class="flex justify-between items-center py-1 border-b border-[#1a1a1a] text-[11px]">
-            <div><b>${k.replace('USDT','')}</b><div class="text-[9px] opacity-50">${a.type}</div></div>
-            <div class="text-right"><div>${(a.price||0).toFixed(4)}</div><div class="text-[9px] opacity-60">${(a.distance_pct||0).toFixed(2)}% Distanz • Vol ${(a.strength||0).toFixed(1)}x</div></div>
-          </div>`;
-        });
-        hochsitzDiv.innerHTML = html;
-      }
-    }catch(e){
-      document.getElementById('rinaHochsitz').innerHTML = `<div class="text-[#ff3b30] text-[11px]">Hochsitz API Fehler: ${e.message} - kein Mock</div>`;
-    }
-    
-    // Reinforced Paths
-    const reinforcedDiv = document.getElementById('rinaReinforced');
-    const reinforced = j.reinforced_paths||[];
-    if(!reinforced.length){
-      reinforcedDiv.innerHTML = '<div class="opacity-50 py-4 text-center text-[11px]">Noch keine verstärkten Pfade - Warte bis Rina den Weg zurück findet - Echte API</div>';
-    } else {
-      let html='';
-      reinforced.slice(-5).reverse().forEach(r=>{
-        html+=`<div class="py-1 border-b border-[#1a1a1a] text-[10px]">
-          <div><b class="text-[#39ff14]">${r.symbol.replace('USDT','')}</b> ✅ Rina found the way nach ${r.elapsed_min?.toFixed(1)}min</div>
-          <div class="text-[9px] opacity-60">Distanz ${r.distance?.toFixed(2)}% • ${r.thicket_reason||''} • Verstärkt für nächstes Mal</div>
-        </div>`;
-      });
-      reinforcedDiv.innerHTML = html;
-    }
-    
-    // Story
-    if(j.logs_tail && j.logs_tail.length){
-      const last = j.logs_tail[j.logs_tail.length-1];
-      document.getElementById('rinaStory').innerHTML = `<span class="text-[#ff7b00]">🐕 Letzte Aktion:</span> ${last.message||last.action||'--'} <span class="opacity-50">• ${last.timestamp?.slice(11,19)||''}</span>`;
-    }
-    
-  }catch(e){
-    document.getElementById('rinaActive').innerHTML = `<div class="text-[#ff3b30] text-[11px] py-4 text-center">Rina API /api/v34/rina nicht erreichbar - kein Mock<br><span class="text-[10px] opacity-60">${e.message} - Echte API nur, keine fixen Platzhalter</span></div>`;
-    document.getElementById('rinaCount').innerText = 'RINA API Fehler';
-  }
-}
-
-async function loadTurtles(){
-  try{
-    const j = await fetchReal('/api/v34/turtles');
-    const queue = j.queue||[];
-    document.getElementById('queueCount').innerText = `${j.count||queue.length}/20 Live`;
-    document.getElementById('queueUniverse').innerText = `Universe ${j.universe_size||100} • ${queue.length} queued • Echte API`;
-    document.getElementById('lastScan').innerText = `Last: ${new Date().toLocaleTimeString()} Live`;
-    const div = document.getElementById('turtleQueue');
-    if(!queue.length){
-      div.innerHTML='<div class="opacity-50 text-[11px] py-6 text-center">Queue leer von echter API /api/v34/turtles - Turtles scannen 100 → 20 alle 120s - Kein Mock, keine fixen Werte</div>';
-      return;
-    }
-    let html='';
-    queue.slice(0,20).forEach(t=>{
-      const sym = t.symbol||'Unbekannt';
-      const price = t.price;
-      const ch = t.change||t.change_24h;
-      const score = t.score||t.turtle_score;
-      html+=`<div class="flex justify-between items-center py-1.5 border-b border-[#1a1a1a] text-[11px]">
-        <div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full border border-[#39ff14]/50 flex items-center justify-center text-[10px]">🐢</span><b class="text-[#39ff14]">${sym.replace('USDT','')}</b><span class="opacity-50 text-[9px]">${score!==undefined?score.toFixed(1):'--'}</span></div>
-        <div class="flex items-center gap-2"><span>${price!==undefined?fmtPrice(price):'Lade...'}</span><span class="${(ch||0)<0?'text-[#39ff14]':'text-[#ff3b30]'}">${ch!==undefined?(ch>0?'+':'')+ch.toFixed(1)+'%':'--'}</span></div>
-      </div>`;
-    });
-    div.innerHTML=html;
-    document.getElementById('turtleFooter').innerText=`Top ${queue.length} von echter API • 2min Scan • ${new Date().toLocaleTimeString()} Live • Kein Mock`;
-  }catch(e){
-    document.getElementById('turtleQueue').innerHTML=`<div class="text-[#ff3b30] text-[11px] py-4 text-center">Turtle API Fehler: ${e.message} - kein Mock, keine fixen Platzhalter - Echte API /api/v34/turtles nicht erreichbar</div>`;
-    document.getElementById('queueCount').innerText='API Fehler';
-  }
-}
-
-async function loadSplinter(){
-  try{
-    const j = await fetchReal('/api/v34/splinter');
-    const list = j.inspection||[];
-    const div = document.getElementById('splinterList');
-    if(!list.length){
-      div.innerHTML='<div class="opacity-50 text-[11px] py-6 text-center">Keine Inspection von echter API /api/v34/splinter - Splinter wartet auf Queue • 5min Zyklus • Kein Mock</div>';
-      return;
-    }
-    let html='';
-    list.forEach(s=>{
-      const bed1 = s.passed_bed1!==undefined ? (s.passed_bed1?'✅':'❌') : '⚪';
-      const bed4 = s.passed_bed4!==undefined ? (s.passed_bed4?'✅':'❌') : '⚪';
-      const ready = s.ready_for_entry!==undefined ? (s.ready_for_entry?'🟢':'🔴') : '⚪';
-      html+=`<div class="py-1.5 border-b border-[#1a1a1a] text-[11px]">
-        <div class="flex justify-between"><b>${(s.symbol||'Unbekannt').replace('USDT','')}</b><span>${ready} ${s.hold_mode||s.meta?.hold_mode||'--'} SLx${s.sl_multiplier||s.meta?.sl_multiplier||'--'}</span></div>
-        <div class="text-[9px] opacity-50">${bed1} Bed1 ${bed4} Bed4 • ${(s.meta?.reasons||[]).join(' | ').slice(0,60)||'Live API Daten'}</div>
-      </div>`;
-    });
-    div.innerHTML=html;
-  }catch(e){
-    document.getElementById('splinterList').innerHTML=`<div class="text-[#ff3b30] text-[11px] py-4 text-center">Splinter API Fehler: ${e.message} - kein Mock</div>`;
-  }
-}
-
-async function loadActive(){
-  try{
-    const j = await fetchReal('/api/v34/active');
-    lastCalls = j.active_calls||[];
-    const div = document.getElementById('openPositions');
-    if(!lastCalls.length){
-      div.innerHTML='<div class="opacity-50 text-[11px] py-6 text-center">Keine offenen Positionen von echter API /api/v34/active - Clan jagt - Kein Mock, keine fixen $100K Platzhalter - Echte Equity von API</div>';
-      document.getElementById('equity').innerText = j.equity!==undefined ? '$'+j.equity.toFixed(2)+' Live' : 'Lade Equity...';
-      return;
-    }
-    let html='';
-    lastCalls.forEach(c=>{
-      const pnlCol = (c.pnl_pct||c.pnl||0)>=0 ? 'text-[#39ff14]' : 'text-[#ff3b30]';
-      html+=`<div class="py-1.5 border-b border-[#1a1a1a] text-[11px]">
-        <div class="flex justify-between"><b>${c.symbol||'Unbekannt'}</b><span class="${pnlCol} font-bold">${c.pnl_pct!==undefined?(c.pnl_pct>0?'+':'')+c.pnl_pct.toFixed(2)+'%':c.pnl!==undefined?c.pnl.toFixed(2):'--'}</span></div>
-        <div class="text-[9px] opacity-60">Entry ${c.entry!==undefined?fmtPrice(c.entry):'--'} • SL ${c.sl!==undefined?fmtPrice(c.sl):'--'} • ${c.hold_mode||''} • ${c.id||''}</div>
-      </div>`;
-    });
-    div.innerHTML=html;
-    document.getElementById('equity').innerText = j.equity!==undefined ? '$'+j.equity.toFixed(2)+' Live' : 'Lade...';
-  }catch(e){
-    document.getElementById('openPositions').innerHTML=`<div class="text-[#ff3b30] text-[11px] py-4 text-center">Active API Fehler: ${e.message} - kein Mock, keine fixen Werte - Echte API /api/v34/active</div>`;
-  }
-}
-
-async function loadMoney(){
-  try{
-    const j = await fetchReal('/api/v34/moneyflow');
-    document.getElementById('mfInflow').innerText = j.inflow!==undefined ? '$'+j.inflow.toFixed(0)+' Live' : 'Lade...';
-    document.getElementById('mfOutflow').innerText = j.outflow!==undefined ? '$'+j.outflow.toFixed(0)+' Live' : 'Lade...';
-    document.getElementById('mfNet').innerText = j.net_flow!==undefined ? '$'+j.net_flow.toFixed(0)+' Live' : 'Lade...';
-    document.getElementById('mfVerdict').innerText = 'Verdict: '+(j.verdict||'Lade von API...')+' • Echte API';
-    document.getElementById('mfVerdict').style.color = j.verdict==='GUT'?'#39ff14':j.verdict==='VORSICHT'?'#ff3b30':'#888';
-    document.getElementById('mfDetails').innerText = `Vol ${(j.details?.avg_vol_change||j.details?.vol||0).toFixed? (j.details.avg_vol_change||0).toFixed(1)+'%':'--'} • Funding ${(j.details?.funding||0)} • Live API, kein Mock`;
-  }catch(e){
-    document.getElementById('mfInflow').innerText = 'API Fehler';
-    document.getElementById('mfVerdict').innerText = 'MoneyFlow API Fehler: '+e.message+' - kein Mock';
-  }
-}
-
-function updateTime(){
-  const now = new Date();
-  document.getElementById('utc').innerText = `STATUS: ONLINE • UTC ${now.toISOString().slice(11,19)} • ${now.toLocaleString('de-DE',{timeZone:'Europe/Berlin'})} CET • V3.4.6 HUBBLE+RINA`;
-  const hour = now.getHours();
-  document.getElementById('timeWindow').innerText = `${String(hour).padStart(2,'0')}:00 CET Live`;
-  const isBest = hour>=9 && hour<15;
-  document.getElementById('timeStatus').innerText = isBest ? '🟢 BEST 09-15 CET • Shredder schläft - Echte Zeit' : (hour>=22||hour<8 ? '🔴 BLACKLIST 22-08 CET • Pause • Live' : '🟡 NEUTRAL • Live Zeit');
-  document.getElementById('timeBar').style.width = isBest ? '85%' : '30%';
-  document.getElementById('timeBar').style.background = isBest ? '#39ff14' : '#ff3b30';
-}
+function fmtPrice(p){let n=Number(p||0); if(n===0) return '0'; if(n<1) return n.toFixed(6); return n.toFixed(2);}
 
 async function loadAll(){
-  updateTime();
   try{
-    await Promise.all([loadHubble(), loadRina(), loadTurtles(), loadSplinter(), loadActive(), loadMoney()]);
-  }catch(e){
-    console.error('loadAll Fehler', e);
-  }
-  // Status
+    let r=await fetch('/api/v34/debug'); let j=await r.json();
+    safeSet('queue-count', j.queue_cnt||0);
+    safeSet('cursor', j.cursor||0);
+    safeSet('status', j.status||'JAGT');
+    safeSet('uptime', 'UP '+Math.floor((j.uptime_sec||0)/60)+'m');
+    safeSet('threat', j.queue_cnt>60?'LOW':'MEDIUM');
+    safeSet('readyCount', (j.hubble_cnt||0)+' READY');
+    safeHtml('memoryInfo', `Memory: Hubble ${j.memory?.hubble_history||0} | Turtle ${j.memory?.turtle_history||0} | ATH ${j.memory?.ath_memory||0}`);
+  }catch(e){}
+
   try{
-    const h = await fetchReal('/api/v34/health');
-    document.getElementById('status').innerText = h.status||'JAGT';
-    document.getElementById('uptime').innerText = 'UP '+Math.floor((h.uptime_sec||0)/3600)+'h Live';
-  }catch(e){
-    document.getElementById('status').innerText = 'API Fehler';
-  }
+    let r=await fetch('/api/v34/turtles'); let j=await r.json();
+    let q=j.queue||[];
+    let html=q.slice(0,20).map(c=>{
+      let sym=c.symbol||c; let price=c.price||0; let ath=c.ath_dd||0;
+      let cls=ath<-50?'text-green-400':'opacity-80';
+      return `<div class="flex justify-between border-b border-[#1a1a1a] py-1 ${cls}"><span>🐢 ${sym}</span><span>$${fmtPrice(price)} ATH ${ath}%</span></div>`;
+    }).join('') || '<div class="opacity-50 py-8 text-center">Warte auf ersten Scan... Backend füllt 20 alle 3 Min</div>';
+    safeHtml('turtle-queue', html);
+  }catch(e){ safeHtml('turtle-queue','<div class="opacity-50">Fehler beim Laden</div>'); }
+
+  try{
+    let r=await fetch('/api/v34/splinter'); let j=await r.json();
+    let ins=j.inspection||[];
+    let html=ins.map(i=>`<div class="flex justify-between border-b border-[#1a1a1a] py-1"><span>🥷 ${i.symbol}</span><span>$${fmtPrice(i.price)}</span><span class="${i.ok?'text-green-400':'text-red-400'}">${i.ok?'OK':''}</span></div>`).join('') || '<div class="opacity-50 py-4 text-center">Keine Inspektion</div>';
+    safeHtml('splinter-list', html);
+  }catch(e){}
+
+  try{
+    let r=await fetch('/api/v34/hubble'); let j=await r.json();
+    let scores=j.scores||[];
+    safeSet('readyCount', scores.filter(s=>s.ready).length+' READY');
+    let html=scores.slice(0,15).map(sc=>`<tr><td>${sc.symbol}</td><td class="${sc.score>=75?'text-[#39ff14] font-bold':''}">${sc.score}</td><td>${sc.ready?'<span class="badge badge-ready">READY</span>':'<span class="badge badge-wait">WAIT</span>'}</td><td>${sc.ath_dd||0}%</td><td>${sc.rsi||0}</td><td>${sc.bb_width||0}</td><td>$${fmtPrice(sc.price)}</td><td>${sc.timewindow||''}</td></tr>`).join('') || '<tr><td colspan="8" class="opacity-50 text-center py-6">Keine Scores - Hubble jagt</td></tr>';
+    safeHtml('hubble-body', html);
+
+    let rinaReady=scores.filter(s=>s.ready).slice(0,6);
+    let rHtml=rinaReady.map(s=>`<div class="flex justify-between"><span>${s.symbol}</span><span class="badge badge-ready">${s.score}</span></div>`).join('') || '<div class="opacity-50 text-center">Keine Ready</div>';
+    safeHtml('rinaReady', rHtml);
+  }catch(e){}
+
+  try{
+    let r=await fetch('/api/v34/rina'); let j=await r.json();
+    let wins=j.active_freedom_windows||[];
+    safeSet('rinaCount', wins.length+' RINA');
+    let html=wins.length? wins.map(w=>`<div class="bg-[#ff7b00]/10 border border-[#ff7b00]/30 rounded p-1.5 flex justify-between"><span>🌲 ${w.symbol} ${w.score}</span><span class="badge badge-freedom">FREEDOM ${w.start||''}</span></div>`).join('') : '<div class="opacity-50 py-6 text-center text-[11px]">Keine aktiven Freedom Windows - Alle Pfade klar</div>';
+    safeHtml('rinaActive', html);
+    let hoch=j.hochsitz_anker||[];
+    safeHtml('rinaHochsitz', hoch.length? hoch.map(h=>`<div>${h.symbol||h}</div>`).join('') : '<div class="opacity-50">Kein Anker</div>');
+  }catch(e){}
 }
 
-function manualRefresh(){ loadAll(); }
-
-async function wizdrawCloseAll(){
-  if(!lastCalls.length){ alert("Keine offenen Positionen von echter API - kein Mock"); return; }
-  if(!confirm(`Wirklich ${lastCalls.length} Positionen closen? Prüft Rina Block - rudi_atmet_durch - Echte API`)) return;
-  for(let c of lastCalls){
-    try{
-      const r = await fetch(`/api/v34/wizdraw/close/${c.id}`,{method:'POST'});
-      const j = await r.json();
-      if(j.status==='blocked'){
-        alert(`Geblockt durch Rina Rakete Freedom Window: ${j.reason} - rudi_atmet_durch - kein Close während Freiheit`);
-      }
-      console.log('Wizdraw close', j);
-    }catch(e){ console.error(e); alert('Close Fehler: '+e.message); }
-  }
-  setTimeout(loadActive, 800);
-}
-
-async function setFreedomWindow(min){
-  try{
-    const r = await fetch('/api/v34/rina/config',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({freedom_window_min: min})});
-    const j = await r.json();
-    console.log('Freedom Window set', j);
-    alert(`Rina Rakete Freiheit auf ${min}min gesetzt - Hirschgarten Prinzip - Echte API`);
-    loadRina();
-  }catch(e){
-    alert('Config Fehler: '+e.message);
-  }
-}
-
-loadAll();
-updateTime();
-setInterval(loadAll, 30000);
-setInterval(()=>{ loadTurtles(); loadSplinter(); }, 60000);
-setInterval(updateTime, 1000);
-setInterval(loadRina, 15000); // Rina alle 15s - Dickicht check
-
-console.log('TURTLE V3.4.6 HUBBLE + RINA RAKETE // HIRSCHGARTEN • Kein Mock, keine fixen Platzhalter, nur echte API • Vertrauen statt Angst • Rina 5min Freiheit im Dickicht kommt selbst zurück');
+function tick(){try{let now=new Date(); safeSet('utc', now.toUTCString()); safeSet('rinaTime', now.toLocaleTimeString('de-DE',{timeZone:'Europe/Berlin'}));}catch(e){}}
+setInterval(()=>{tick();},1000);
+setInterval(()=>{loadAll();},8000);
+tick(); loadAll();
 </script>
 </body>
 </html>
