@@ -148,4 +148,26 @@ async function loadAll(){
   }catch(e){ console.log('hubble err', e); }
 
   try{
-    let r=await fetch('/api/v34/rina'); let
+    let r=await fetch('/api/v34/rina'); let j=await r.json();
+    let wins=j.rinas||j.active_freedom_windows||[];
+    if(wins.length>0){
+      safeSet('rinaCount', wins.length+' RINA');
+      let html=wins.map(w=>`<div class="bg-[#ff7b00]/10 border border-[#ff7b00]/30 rounded p-1.5 flex justify-between"><span>🌲 ${w.symbol||w} ${w.score||''}</span><span class="badge badge-freedom">FREEDOM</span></div>`).join('');
+      safeHtml('rinaActive', html);
+    }else{
+      safeHtml('rinaActive', '<div class="opacity-50 py-6 text-center text-[11px]">Keine aktiven Freedom Windows - Alle Pfade klar</div>');
+      safeSet('rinaCount','0 RINA');
+    }
+    let hoch=j.hochsitz_anker||[];
+    if(hoch.length) safeHtml('rinaHochsitz', hoch.map(h=>`<div>${h.symbol||h}</div>`).join(''));
+    else safeHtml('rinaHochsitz','<div class="opacity-50">Kein Anker - Hirschgarten ruhig</div>');
+  }catch(e){}
+}
+
+function tick(){try{let now=new Date(); safeSet('utc', now.toUTCString()); safeSet('rinaTime', now.toLocaleTimeString('de-DE',{timeZone:'Europe/Berlin'}));}catch(e){}}
+setInterval(()=>{tick();},1000);
+setInterval(()=>{loadAll();},8000);
+tick(); loadAll();
+</script>
+</body>
+</html>
