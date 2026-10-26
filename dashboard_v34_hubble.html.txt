@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURTLE V3.4.7 HUBBLE + RINA RAKETE // HIRSCHGARTEN</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{background:#070707;color:#eee;font-family:'JetBrains Mono',monospace;margin:0;padding:0}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#39ff14;border-radius:3px}
+::-webkit-scrollbar-track{background:#111}
+.neon-border{border:1px solid rgba(57,255,20,0.3);box-shadow:inset 0 0 20px rgba(57,255,20,0.05)}
+.neon-corner{position:relative}
+.neon-corner::before{content:"";position:absolute;top:0;left:0;width:18px;height:18px;border-top:2px solid #39ff14;border-left:2px solid #39ff14}
+.neon-corner::after{content:"";position:absolute;bottom:0;right:0;width:18px;height:18px;border-bottom:2px solid #39ff14;border-right:2px solid #39ff14}
+.live-dot{width:8px;height:8px;background:#39ff14;border-radius:50%;box-shadow:0 0 8px #39ff14;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+table{width:100%;border-collapse:collapse}
+th{font-family:'Share Tech Mono';font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#888;text-align:left;padding:8px 6px;border-bottom:1px solid #222}
+td{padding:8px 6px;border-bottom:1px solid #1a1a1a;font-size:11px}
+tr:hover td{background:rgba(57,255,20,0.04)}
+.badge{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700}
+.badge-ready{background:#39ff14;color:#000;box-shadow:0 0 6px #39ff14}
+.badge-wait{background:#222;color:#888;border:1px solid #333}
+.badge-freedom{background:#ff7b00;color:#000;box-shadow:0 0 6px #ff7b00;animation:pulse 1s infinite}
+</style>
+</head>
+<body class="bg-[#070707] text-[#eee] min-h-screen">
+<header class="sticky top-0 z-50 bg-[#070707]/95 backdrop-blur border-b border-[rgba(57,255,20,0.2)] px-3 md:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+  <div class="flex items-center gap-3 min-w-0">
+    <div class="w-9 h-9 rounded-full border-2 border-[#39ff14] flex items-center justify-center bg-black shadow-[0_0_10px_#39ff14]">🐢</div>
+    <div class="min-w-0">
+      <div class="font-bold text-[13px] md:text-[15px] text-[#39ff14] tracking-wider">TURTLE V3.4.7 HUBBLE + RINA RAKETE // HIRSCHGARTEN</div>
+      <div class="text-[10px] text-[#39ff14]/70 flex gap-2"><span id="utc">UTC --:--:--</span><span>•</span><span>Rina 5min Freiheit</span></div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 text-[11px] bg-black border border-[#39ff14]/30 rounded-full px-2.5 py-1"><div class="live-dot"></div><span id="status">JAGT</span><span>•</span><span id="equity">Lade...</span></div>
+    <div class="text-[10px] bg-[#39ff14] text-black font-bold px-2 py-1 rounded-full" id="readyCount">0 READY</div>
+    <div class="text-[10px] bg-[#ff7b00] text-black font-bold px-2 py-1 rounded-full" id="rinaCount">0 RINA</div>
+    <div class="text-[10px] opacity-60" id="uptime">UP --</div>
+    <button onclick="manualRefresh()" class="text-[10px] border border-[#39ff14]/40 px-2.5 py-1 rounded hover:bg-[#39ff14] hover:text-black">↻ REFRESH</button>
+  </div>
+</header>
+<main class="p-2 md:p-3 max-w-[1600px] mx-auto space-y-3">
+  <div class="neon-border neon-corner bg-[#111111] rounded p-3" style="border-color: rgba(255,123,0,0.4)">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <h2 class="text-[12px] tracking-widest text-[#ff7b00]">🐕‍🦺 RINA RAKETE - FREEDOM & RECALL - HIRSCHGARTEN BERLIN</h2>
+      <div class="flex items-center gap-2 text-[9px]">
+        <span class="opacity-60">Freedom Window:</span>
+        <span id="freedomConfig" class="bg-[#ff7b00] text-black px-2 py-0.5 rounded-full font-bold">5min</span>
+        <span class="opacity-50" id="rinaTime">--:--:--</span>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div class="bg-[#070707] border border-[#222] rounded p-2.5">
+        <div class="text-[10px] tracking-widest text-[#ff7b00] mb-2">🌲 AKTIVE FREEDOM WINDOWS</div>
+        <div id="rinaActive" class="space-y-1.5 max-h-[200px] overflow-y-auto text-[11px]"><div class="opacity-50 py-6 text-center">Lade Rina...</div></div>
+      </div>
+      <div class="bg-[#070707] border border-[#222] rounded p-2.5">
+        <div class="text-[10px] tracking-widest text-[#39ff14] mb-2">🏔️ HOCHSITZ ANKER</div>
+        <div id="rinaHochsitz" class="space-y-1 text-[11px]"></div>
+        <div class="mt-2 text-[9px] opacity-40" id="memoryInfo">Memory: 0</div>
+      </div>
+      <div class="bg-[#070707] border border-[#222] rounded p-2.5">
+        <div class="text-[10px] tracking-widest text-[#888] mb-2">📊 TOP READY (Hubble >=45)</div>
+        <div id="rinaReady" class="space-y-1 text-[11px]"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+    <div class="neon-border bg-[#111111] rounded p-3">
+      <div class="flex justify-between mb-2"><h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest">🐢 TURTLE SCANNER (100 COINS) - V3.4.7</h2><span class="text-[10px] opacity-60"><span id="queue-count">0</span> Coins • Cursor <span id="cursor">0</span></span></div>
+      <div id="turtle-queue" class="space-y-1 text-[11px] max-h-[380px] overflow-y-auto">Warte auf Scan...</div>
+    </div>
+    <div class="neon-border bg-[#111111] rounded p-3">
+      <h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest mb-2">🥷 SPLINTERZELLE (8 Coins)</h2>
+      <div id="splinter-list" class="space-y-1 text-[11px]">Lade...</div>
+      <div class="mt-3 text-[10px]">Threat Level: <span id="threat" class="text-green-400">LOW</span><div class="w-full h-1 bg-[#222] mt-1 rounded"><div class="h-1 bg-[#39ff14] w-3/4"></div></div></div>
+    </div>
+  </div>
+  <div class="neon-border bg-[#111111] rounded p-3">
+    <h2 class="text-[#39ff14] font-bold text-[12px] tracking-widest mb-2">🔭 HUBBLE SCORE</h2>
+    <div class="overflow-x-auto">
+      <table><thead><tr><th>SYM</th><th>SCORE</th><th>READY</th><th>ATH DD</th><th>RSI</th><th>BB</th><th>PRICE</th><th>TIME</th></tr></thead><tbody id="hubble-body"><tr><td colspan="8" class="opacity-50 text-center py-6">Lade Hubble...</td></tr></tbody></table>
+    </div>
+  </div>
+</main>
+<script>
+function safeSet(id, txt){try{let el=document.getElementById(id); if(el) el.innerText=txt;}catch(e){}}
+function safeHtml(id, html){try{let el=document.getElementById(id); if(el) el.innerHTML=html;}catch(e){}}
+function setFreedomWindow(m){safeSet('freedomConfig', m+'min'); localStorage.setItem('freedom', m);}
+function manualRefresh(){loadAll();}
+function fmtPrice(p){let n=Number(p||0); if(n===0) return '0'; if(n<1) return n.toFixed(6); return n.toFixed(2);}
+
+async function loadAll(){
+  try{
+    let r=await fetch('/api/v34/debug'); if(!r.ok) throw new Error(r.status);
+    let j=await r.json();
+    safeSet('queue-count', j.queue_cnt||0);
+    safeSet('cursor', j.cursor||0);
+    safeSet('status', j.status||'JAGT');
+    safeSet('uptime', 'UP '+Math.floor((j.uptime_sec||0)/60)+'m');
+    safeSet('threat', j.queue_cnt>60?'LOW':'MEDIUM');
+    safeSet('equity', '$'+(j.equity||100000));
+    if(j.paper_trades && j.paper_trades.length>0){
+      safeSet('rinaCount', j.paper_trades.length+' PAPER');
+    }
+    let mem = j.queue_cnt+' coins | '+j.hubble_cnt+' scores | '+j.ready_cnt+' ready';
+    safeHtml('memoryInfo', mem);
+  }catch(e){ console.log('debug err', e); }
+
+  try{
+    let r=await fetch('/api/v34/turtles'); if(!r.ok) throw new Error('HTTP '+r.status);
+    let j=await r.json();
+    let q=j.queue||[];
+    let html=q.slice(0,25).map(c=>{
+      let sym=c.symbol||c; let price=c.price||0; let ath=c.ath_dd||0;
+      let cls=ath<-50?'text-green-400':'opacity-80';
+      return `<div class="flex justify-between border-b border-[#1a1a1a] py-1 ${cls}"><span>🐢 ${sym}</span><span>$${fmtPrice(price)} ATH ${ath}%</span></div>`;
+    }).join('') || '<div class="opacity-50 py-8 text-center">Warte auf Scan... Backend füllt 20 alle 3 Min</div>';
+    safeHtml('turtle-queue', html);
+  }catch(e){
+    safeHtml('turtle-queue', `<div class="text-red-400 p-2">API 500: ${e.message} - retry 5s</div>`);
+  }
+
+  try{
+    let r=await fetch('/api/v34/splinter'); if(!r.ok) throw new Error(r.status);
+    let j=await r.json();
+    let ins=j.inspection||[];
+    let html=ins.map(i=>`<div class="flex justify-between border-b border-[#1a1a1a] py-1"><span>🥷 ${i.symbol}</span><span>$${fmtPrice(i.price)}</span><span class="${i.ok?'text-green-400':'text-red-400'}">${i.ok?'OK':''}</span></div>`).join('') || '<div class="opacity-50 py-4 text-center">Keine Inspektion</div>';
+    safeHtml('splinter-list', html);
+  }catch(e){}
+
+  try{
+    let r=await fetch('/api/v34/hubble'); if(!r.ok) throw new Error(r.status);
+    let j=await r.json();
+    let scores=j.scores||[];
+    safeSet('readyCount', scores.filter(s=>s.ready).length+' READY');
+    let html=scores.slice(0,20).map(sc=>`<tr><td>${sc.symbol}</td><td class="${sc.score>=75?'text-[#39ff14] font-bold':sc.score>=45?'text-yellow-400':''}">${sc.score}</td><td>${sc.ready?'<span class="badge badge-ready">READY</span>':'<span class="badge badge-wait">WAIT</span>'}</td><td>${sc.ath_dd||0}%</td><td>${sc.rsi||sc.rsi_score||0}</td><td>${(sc.bb_width||sc.bb||0).toFixed?sc.bb_width:sc.bb_width||0}</td><td>$${fmtPrice(sc.price)}</td><td>${sc.timewindow||''}</td></tr>`).join('') || '<tr><td colspan="8" class="opacity-50 text-center py-6">Keine Scores - Hubble jagt</td></tr>';
+    safeHtml('hubble-body', html);
+    let rinaReady=scores.filter(s=>s.ready).slice(0,6);
+    let rHtml=rinaReady.map(s=>`<div class="flex justify-between"><span>${s.symbol}</span><span class="badge badge-ready">${s.score}</span></div>`).join('') || '<div class="opacity-50 text-center">Keine Ready</div>';
+    safeHtml('rinaReady', rHtml);
+  }catch(e){ console.log('hubble err', e); }
+
+  try{
+    let r=await fetch('/api/v34/rina'); let j=await r.json();
+    let wins=j.rinas||j.active_freedom_windows||[];
+    if(wins.length>0){
+      safeSet('rinaCount', wins.length+' RINA');
+      let html=wins.map(w=>`<div class="bg-[#ff7b00]/10 border border-[#ff7b00]/30 rounded p-1.5 flex justify-between"><span>🌲 ${w.symbol||w} ${w.score||''}</span><span class="badge badge-freedom">FREEDOM</span></div>`).join('');
+      safeHtml('rinaActive', html);
+    }else{
+      safeHtml('rinaActive', '<div class="opacity-50 py-6 text-center text-[11px]">Keine aktiven Freedom Windows - Alle Pfade klar</div>');
+      safeSet('rinaCount','0 RINA');
+    }
+    let hoch=j.hochsitz_anker||[];
+    if(hoch.length) safeHtml('rinaHochsitz', hoch.map(h=>`<div>${h.symbol||h}</div>`).join(''));
+    else safeHtml('rinaHochsitz','<div class="opacity-50">Kein Anker - Hirschgarten ruhig</div>');
+  }catch(e){}
+}
+
+function tick(){try{let now=new Date(); safeSet('utc', now.toUTCString()); safeSet('rinaTime', now.toLocaleTimeString('de-DE',{timeZone:'Europe/Berlin'}));}catch(e){}}
+setInterval(()=>{tick();},1000);
+setInterval(()=>{loadAll();},8000);
+tick(); loadAll();
+</script>
+</body>
+</html>
