@@ -267,6 +267,12 @@ def paper_monitor_positions():
     except Exception as e:
         print(f"[PAPER] fail {e}")
 
+def safe_paper_monitor():
+    try:
+        paper_monitor_positions()  # direkt sync aufrufen, kein asyncio
+    except Exception as e:
+        print(f"[PAPER MONITOR FAIL] {e}")
+
 async def background_boot():
     await asyncio.sleep(2)
     try:
@@ -274,14 +280,22 @@ async def background_boot():
         init_engines()
         run_turtle_scan()
         from apscheduler.schedulers.asyncio import AsyncIOScheduler
-        global scheduler
-        scheduler = AsyncIOScheduler()
-        scheduler.add_job(lambda: asyncio.create_task(asyncio.to_thread(paper_monitor_positions)), 'interval', seconds=30)
-        scheduler.add_job(lambda: asyncio.create_task(asyncio.to_thread(run_turtle_scan)), 'interval', minutes=2)
-        scheduler.add_job(lambda: asyncio.create_task(asyncio.to_thread(run_splinter_inspection)), 'interval', minutes=5)
-        scheduler.add_job(lambda: asyncio.create_task(asyncio.to_thread(run_hubble_inspection)), 'interval', minutes=5)
-        scheduler.add_job(lambda: asyncio.create_task(asyncio.to_thread(hubble_engine.fetch_indices)) if hubble_engine else None, 'interval', minutes=10)
-        scheduler.start()
+
+ from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    global scheduler
+    scheduler = AsyncIOScheduler()
+
+    # Paper und Turtle - SYNC, direkt
+    scheduler.add_job(safe_paper_monitor, 'interval', seconds=30, id='paper_monitor', replace_existing=True)
+    scheduler.add_job(safe_turtle_scan, 'interval', seconds=100, id='turtle_scan', replace_existing=True)
+
+    # Die anderen - ASYNCIO, ohne create_task/to_thread
+    scheduler.add_job(run_splinter_inspection, 'interval', minutes=5, id='splinter', replace_existing=True)
+    scheduler.add_job(run_hubble_inspection, 'interval', minutes=5, id='hubble', replace_existing=True)
+    scheduler.add_job(lambda: hubble_engine.fetch_indices() if hubble_engine else None, 'interval', minutes=10, id='indices', replace_existing=True)
+
+    scheduler.start()
+        
         print(f"[BOOT] V3.4.7e FINAL BOOT={datetime.now(ZoneInfo('Europe/Berlin')).isoformat()} queue={len(STATE.get('vorauswahl_queue',[]))}")
         await asyncio.to_thread(run_hubble_inspection)
         await asyncio.to_thread(run_splinter_inspection)
