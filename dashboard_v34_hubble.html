@@ -3,114 +3,312 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TURTLE V3.5 HIRSCHGARTEN GELB-BLAU // KEULE EDITION</title>
+<title>TURTLE V3.5 HIRSCHGARTEN GELB-BLAU EXTREME // KEULE EDITION</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box}
-body{background:#07080F;color:#E8E8E8;font-family:'JetBrains Mono',monospace}
-.bg-grid{background-image:radial-gradient(rgba(255,230,0,0.06) 1px, transparent 1px), radial-gradient(rgba(0,212,255,0.06) 1px, transparent 1px);background-size:28px 28px;background-position:0 0,14px 14px}
-.glass{background:rgba(16,18,30,0.65);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,0.06)}
-.glass-yellow{border:1px solid rgba(255,230,0,0.35);box-shadow:0 0 50px rgba(255,230,0,0.12), inset 0 0 24px rgba(255,230,0,0.04)}
-.glass-blue{border:1px solid rgba(0,212,255,0.35);box-shadow:0 0 50px rgba(0,212,255,0.12), inset 0 0 24px rgba(0,212,255,0.04)}
-.neon-yellow{color:#FFE600;text-shadow:0 0 14px rgba(255,230,0,0.7)}
-.neon-blue{color:#00D4FF;text-shadow:0 0 14px rgba(0,212,255,0.7)}
-.pulse{animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+body{background:#060812;color:#E8E8E8;font-family:'JetBrains Mono',monospace;overflow-x:hidden}
+.bg-grid{background-image:radial-gradient(rgba(255,230,0,0.07) 1px, transparent 1px), radial-gradient(rgba(0,212,255,0.07) 1px, transparent 1px);background-size:32px 32px, 32px 32px;background-position:0 0,16px 16px}
+.glass{background:rgba(14,16,28,0.72);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.06)}
+.glass-yellow{border:1px solid rgba(255,230,0,0.4);box-shadow:0 0 60px rgba(255,230,0,0.14), inset 0 0 30px rgba(255,230,0,0.05)}
+.glass-blue{border:1px solid rgba(0,212,255,0.4);box-shadow:0 0 60px rgba(0,212,255,0.14), inset 0 0 30px rgba(0,212,255,0.05)}
+.neon-yellow{color:#FFE600;text-shadow:0 0 18px rgba(255,230,0,0.8)}
+.neon-blue{color:#00D4FF;text-shadow:0 0 18px rgba(0,212,255,0.8)}
+.pulse{animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1; transform:scale(1)}50%{opacity:0.5; transform:scale(0.92)}}
 .shimmer{position:relative;overflow:hidden}
-.shimmer::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,230,0,0.12),transparent);animation:shim 3s infinite}
-@keyframes shim{0%{left:-100%}100%{left:100%}}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:linear-gradient(#FFE600,#00D4FF);border-radius:10px}
+.shimmer::after{content:"";position:absolute;top:0;left:-150%;width:150%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,230,0,0.18),rgba(0,212,255,0.18),transparent);animation:shim 2.5s infinite}
+@keyframes shim{0%{left:-150%}100%{left:150%}}
+.progress-yellow{box-shadow:0 0 10px #FFE600}
+.progress-blue{box-shadow:0 0 10px #00D4FF}
+.card-hover{transition:all 0.35s cubic-bezier(0.4,0,0.2,1)}
+.card-hover:hover{transform:translateY(-3px) scale(1.01);border-color:rgba(255,230,0,0.5);box-shadow:0 12px 40px rgba(0,0,0,0.6),0 0 30px rgba(255,230,0,0.15)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#FFE600,#00D4FF);border-radius:10px}
+.badge-yellow{background:#FFE600;color:#000;font-weight:800;box-shadow:0 0 12px #FFE600;border-radius:999px;padding:2px 10px;font-size:10px}
+.badge-blue{background:#00D4FF;color:#000;font-weight:800;box-shadow:0 0 12px #00D4FF;border-radius:999px;padding:2px 10px;font-size:10px}
+.badge-wait{background:#222;color:#888;border:1px solid #333;border-radius:999px;padding:2px 8px;font-size:10px}
 </style>
 </head>
-<body class="bg-[#07080F] min-h-screen bg-grid">
-<header class="sticky top-0 z-50 backdrop-blur-xl bg-[#07080F]/80 border-b border-white/10 px-4 py-3">
-<div class="max-w-[1700px] mx-auto flex justify-between items-center">
+<body class="bg-[#060812] min-h-screen bg-grid">
+<header class="sticky top-0 z-50 backdrop-blur-2xl bg-[#060812]/85 border-b border-white/10 px-4 py-3">
+<div class="max-w-[1800px] mx-auto flex flex-wrap justify-between items-center gap-3">
 <div class="flex items-center gap-4">
-<div class="w-11 h-11 rounded-2xl bg-black border border-[#FFE600]/50 flex items-center justify-center shadow-[0_0_20px_rgba(255,230,0,0.4)]">🐢</div>
+<div class="w-12 h-12 rounded-2xl bg-black border-2 border-[#FFE600]/60 flex items-center justify-center text-[22px] shadow-[0_0_30px_rgba(255,230,0,0.5)]">🐢</div>
 <div>
-<div class="font-bold text-[15px] tracking-[0.15em]">TURTLE <span class="neon-yellow">V3.5</span> // <span class="neon-blue">GELB-BLAU</span> <span class="text-white/30 text-[10px]">KEULE</span></div>
-<div class="text-[10px] text-white/40">UTC <span id="utc">--:--:--</span> • RINA 5min • BERLIN HIRSCHGARTEN • <span id="apiMode">--</span></div>
+<div class="font-bold text-[16px] tracking-[0.18em]">TURTLE <span class="neon-yellow">V3.5</span> // <span class="neon-blue">GELB-BLAU EXTREME</span></div>
+<div class="flex gap-2 text-[10px] text-white/40 font-mono"><span id="utc">UTC --:--:--</span><span>•</span><span id="berlin">BERLIN --:--:--</span><span>•</span><span class="text-[#FFE600]/60">Holz steht</span></div>
 </div>
 </div>
-<div class="flex gap-2">
-<div class="glass rounded-full px-3 py-1.5 text-[11px] flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-[#FFE600] pulse"></div><span id="status">JAGT</span><span class="text-white/20">|</span><span id="equity">$100k</span></div>
-<div id="readyCount" class="bg-[#FFE600] text-black font-bold text-[11px] px-3 py-1.5 rounded-full shadow-[0_0_14px_#FFE600]">0 READY</div>
-<div id="rinaCount" class="bg-[#00D4FF] text-black font-bold text-[11px] px-3 py-1.5 rounded-full shadow-[0_0_14px_#00D4FF]">0 RINA</div>
+<div class="flex items-center gap-2">
+<div class="glass rounded-full px-3.5 py-2 flex items-center gap-2.5 text-[11px]"><div class="w-2.5 h-2.5 rounded-full bg-[#FFE600] pulse shadow-[0_0_8px_#FFE600]"></div><span id="status" class="font-bold">JAGT</span><span class="opacity-20">|</span><span id="equity" class="opacity-80">$100,000</span></div>
+<div id="readyCount" class="badge-yellow">0 READY</div>
+<div id="rinaCount" class="badge-blue">0 RINA</div>
+<div id="uptime" class="text-[10px] opacity-40 ml-1">UP --</div>
+<button onclick="loadAll()" class="glass rounded-full w-9 h-9 flex items-center justify-center hover:bg-white/10">↻</button>
 </div>
 </div>
 </header>
-<main class="max-w-[1700px] mx-auto p-4 space-y-4">
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-<div class="glass glass-yellow rounded-2xl p-4 shimmer"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">MONEYFLOW • BED4</div><div class="text-[26px] font-bold neon-yellow" id="moneyflowVal">BED4</div><div class="text-[11px] text-white/60" id="moneyflowSub">Net +€12.4k • 24h +8.3% • GUT</div></div>
-<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">INDICES • BTC.D</div><div class="text-[26px] font-bold neon-blue" id="btcDom">54.2%</div><div class="text-[11px] text-white/60" id="btcDomSub">Dominance -0.6% • risk-on</div></div>
-<div class="glass glass-yellow rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">BEST TIME • BERLIN</div><div class="text-[26px] font-bold" id="bestTime">09:00 CET</div><div class="text-[11px] text-white/60" id="bestTimeSub">Paper: 1% Equity / Trade</div></div>
-<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">QUEUE • TURTLE</div><div class="text-[36px] font-bold" id="queueCount">--/100</div><div class="text-[11px] text-white/60" id="queueSub">Watchlist: -- / 20</div></div>
+<main class="max-w-[1800px] mx-auto p-3 md:p-4 space-y-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+<div class="glass glass-yellow rounded-[20px] p-5 card-hover shimmer">
+<div class="flex justify-between mb-3"><span class="text-[10px] tracking-[0.2em] text-white/40">MONEYFLOW • BED4 REAL</span><span class="text-[9px] bg-[#FFE600]/20 text-[#FFE600] px-2 py-1 rounded-full">LIVE API</span></div>
+<div class="grid grid-cols-3 gap-2">
+<div><div class="text-[9px] text-white/40">INFLOW</div><div id="mfInflow" class="text-[15px] font-bold neon-yellow">$Lade</div></div>
+<div><div class="text-[9px] text-white/40">OUTFLOW</div><div id="mfOutflow" class="text-[15px] font-bold text-[#ff4d4d]">$Lade</div></div>
+<div><div class="text-[9px] text-white/40">NET</div><div id="mfNet" class="text-[15px] font-bold">$Lade</div></div>
 </div>
-
-<div class="glass glass-blue rounded-[24px] p-5">
-<h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-yellow">RINA RAKETE</span> — <span class="neon-blue">HIRSCHGARTEN</span></h2>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5">
-<div class="bg-black/40 rounded-2xl border border-[#FFE600]/20 p-4"><div class="text-[#FFE600]">FREEDOM WINDOWS • 3/3 open</div><div class="text-[11px] text-white/60 mt-1" id="rinaWindows">Wird live aus /api/v34/rina gefüllt</div></div>
-<div class="bg-black/40 rounded-2xl border border-[#00D4FF]/20 p-4"><div class="text-[#00D4FF]">HOCHSITZ ANKER • Support hold</div><div class="text-[11px] text-white/60 mt-1" id="rinaAnchor">Healthline 90d • SMA20 / SMA50</div></div>
-<div class="bg-black/40 rounded-2xl border border-white/10 p-4">Verstärkte Pfade — Vertrauen statt Angst. rudi_atmet_durch</div>
+<div id="mfVerdict" class="mt-3 text-[11px] text-white/60">Lade /api/v34/moneyflow...</div>
+<div class="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden"><div id="mfBar" class="h-full bg-[#FFE600] w-[0%] progress-yellow transition-all duration-700"></div></div>
 </div>
+<div class="glass glass-blue rounded-[20px] p-5 card-hover">
+<div class="flex justify-between mb-3"><span class="text-[10px] tracking-[0.2em] text-white/40">INDICES • COINGECKO LIVE</span><span class="text-[9px] text-white/30">15M</span></div>
+<div class="grid grid-cols-2 gap-3">
+<div><div class="text-[9px] text-white/40">BTC.D</div><div id="btcDom" class="text-[24px] font-bold neon-blue">--%</div><div id="btcChange" class="text-[11px] text-white/40">--</div></div>
+<div><div class="text-[9px] text-white/40">USDT.D</div><div id="usdtDom" class="text-[24px] font-bold">--%</div><div class="text-[11px] text-[#00D4FF]/60">Live</div></div>
 </div>
-
-<!-- WATCHLIST 20 -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-<div class="glass glass-yellow rounded-[24px] p-5">
-<h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-yellow">WATCHLIST • 20</span> <span class="text-white/30">SCALPING 24H-7D</span></h2>
-<div id="watchlist" class="mt-4 space-y-1 text-[12px]">Lade Watchlist...</div>
+<div id="fractal" class="mt-2 text-[10px] leading-tight text-white/70">Lade fractal von /api/v34/hubble...</div>
 </div>
-<div class="glass glass-blue rounded-[24px] p-5">
-<h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-blue">HUBBLE SCORES</span> <span class="text-white/30">BEWERTUNGSENGINE</span></h2>
-<div id="hubble" class="mt-4 space-y-1 text-[12px]">Lade Scores...</div>
+<div class="glass glass-yellow rounded-[20px] p-5 card-hover">
+<div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">BEST TIMEWINDOW • BERLIN LIVE</div>
+<div id="timeWindow" class="text-[30px] font-bold leading-none tracking-tight">--:-- CET</div>
+<div id="timeStatus" class="mt-2 inline-flex items-center gap-1.5 text-[11px] bg-[#FFE600]/15 text-[#FFE600] px-3 py-1 rounded-full"><span class="w-1.5 h-1.5 bg-[#FFE600] rounded-full pulse"></span> Prüfe Zeit...</div>
+<div class="mt-3 h-1.5 bg-white/10 rounded-full overflow-hidden"><div id="timeBar" class="h-full bg-[#FFE600] w-[30%] progress-yellow transition-all"></div></div>
+<div class="text-[9px] opacity-40 mt-1">BEST 09-15 CET • BLACKLIST 22-08 • Live Zeit</div>
 </div>
-</div>
-
-<!-- PAPER + TURTLE QUEUE -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-<div class="glass rounded-[24px] p-5">
-<h2 class="font-bold text-[13px] tracking-[0.2em]">PAPER TRADES • <span class="neon-yellow">$100.000 • 1%</span></h2>
-<div id="paper" class="mt-4 space-y-1 text-[12px]">Keine offenen Trades</div>
-</div>
-<div class="glass rounded-[24px] p-5">
-<h2 class="font-bold text-[13px] tracking-[0.2em]">TURTLE QUEUE • <span class="neon-blue">TOP 100 VOLATILSTE</span></h2>
-<div id="queueList" class="mt-4 space-y-1 text-[12px] max-h-[320px] overflow-y-auto">Lade Queue...</div>
+<div class="glass glass-blue rounded-[20px] p-5 card-hover">
+<div class="text-[10px] tracking-[0.2em] text-white/40 mb-2">QUEUE • TURTLE LIVE 2MIN</div>
+<div class="flex items-baseline gap-2"><div id="queueCount" class="text-[38px] font-bold leading-none neon-blue">--</div><div class="text-[14px] text-white/30">/ 100</div></div>
+<div id="queueUniverse" class="text-[10px] text-white/50 mt-1">Lade von /api/v34/turtles...</div>
+<div id="lastScan" class="mt-2 text-[10px] font-bold text-[#00D4FF]">Warte auf Scan...</div>
+<div class="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden"><div id="queueBar" class="h-full bg-[#00D4FF] w-[0%] progress-blue transition-all"></div></div>
 </div>
 </div>
-
-<div class="text-center text-[10px] text-white/30 pb-4">Leonardo V3.4.7 FIXED • API: /api/v34/health • /api/v34/turtles • /api/v34/hubble • /api/v34/paper • Poll 15s • Anti-Ban: 1 Bulk-Call / 60s</div>
+<div class="glass rounded-[28px] p-6 relative overflow-hidden" style="border:1px solid rgba(255,230,0,0.25);box-shadow:0 0 80px rgba(255,230,0,0.08),0 0 80px rgba(0,212,255,0.08)">
+<div class="absolute -right-24 -top-24 w-[500px] h-[500px] bg-[#FFE600]/12 rounded-full blur-[90px]"></div>
+<div class="absolute -left-24 -bottom-24 w-[500px] h-[500px] bg-[#00D4FF]/12 rounded-full blur-[90px]"></div>
+<div class="relative flex flex-wrap justify-between items-center gap-3 mb-6">
+<h2 class="font-bold text-[14px] tracking-[0.25em]"><span class="neon-yellow">🐕‍🦺 RINA RAKETE</span> <span class="text-white/20">— FREEDOM & RECALL —</span> <span class="neon-blue">HIRSCHGARTEN EXTREME</span></h2>
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-white/40">Freedom:</span>
+<button onclick="setFreedom(3)" class="text-[10px] border border-white/10 px-3.5 py-1.5 rounded-full hover:bg-white/10">3m</button>
+<button onclick="setFreedom(5)" class="text-[10px] bg-[#FFE600] text-black font-bold px-3.5 py-1.5 rounded-full shadow-[0_0_12px_#FFE600]">5m</button>
+<button onclick="setFreedom(10)" class="text-[10px] border border-white/10 px-3.5 py-1.5 rounded-full hover:bg-white/10">10m</button>
+<span id="rinaTime" class="text-[10px] text-white/30 ml-2">--:--:--</span>
+</div>
+</div>
+<div class="relative grid grid-cols-1 lg:grid-cols-3 gap-4">
+<div class="bg-[#080a14]/80 rounded-2xl border border-[#FFE600]/20 p-4 backdrop-blur">
+<div class="flex items-center gap-2 mb-3"><span class="w-2 h-2 bg-[#FFE600] rounded-full pulse"></span><span class="text-[11px] tracking-widest text-[#FFE600]">FREEDOM WINDOWS • DICKICHT</span></div>
+<div id="rinaActive" class="space-y-2 max-h-[260px] overflow-y-auto pr-1 text-[11px]"><div class="opacity-40 text-center py-8">Lade Rina von /api/v34/rina...</div></div>
+</div>
+<div class="bg-[#080a14]/80 rounded-2xl border border-[#00D4FF]/20 p-4 backdrop-blur">
+<div class="flex items-center gap-2 mb-3"><span class="w-2 h-2 bg-[#00D4FF] rounded-full"></span><span class="text-[11px] tracking-widest text-[#00D4FF]">HOCHSITZ ANKER • ZUHAUSE</span></div>
+<div id="rinaHochsitz" class="space-y-2 max-h-[260px] overflow-y-auto pr-1 text-[11px]"><div class="opacity-40 text-center py-8">Lade Hochsitz von /api/v34/rina/hochsitz...</div></div>
+</div>
+<div class="bg-[#080a14]/80 rounded-2xl border border-white/10 p-4 backdrop-blur">
+<div class="text-[11px] tracking-widest text-white/50 mb-3">📖 VERSTÄRKTE PFADE • RINA FOUND WAY</div>
+<div id="rinaReinforced" class="space-y-2 max-h-[150px] overflow-y-auto text-[10px]"><div class="opacity-40 text-center py-6">Warte auf reinforced paths...</div></div>
+<div id="rinaStory" class="mt-3 bg-white/[0.04] rounded-xl p-3 text-[11px] leading-relaxed border border-white/5">Hirschgarten Prinzip: Rina bekommt 5min komplette Freiheit im Dickicht und kommt von selbst zurück. Kein Eingriff. Vertrauen statt Angst. — rudi_atmet_durch</div>
+</div>
+</div>
+</div>
+<div class="glass glass-yellow rounded-[28px] p-6">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+<div class="flex items-center gap-3"><h2 class="font-bold text-[13px] tracking-[0.2em] neon-yellow">🔭 HUBBLE TABLE • LIVE 0-100 SCORE</h2><span id="hubbleMeta" class="text-[10px] bg-white/10 px-3 py-1 rounded-full">Lade...</span></div>
+<div class="flex gap-2"><button onclick="sortTable('score')" class="text-[10px] bg-[#FFE600] text-black font-bold px-3.5 py-1.5 rounded-full">SCORE ↓</button><button onclick="sortTable('ath_dd')" class="text-[10px] border border-white/10 px-3 py-1 rounded-full hover:bg-white/10">ATH DD</button><button onclick="sortTable('rsi')" class="text-[10px] border border-white/10 px-3 py-1 rounded-full hover:bg-white/10">RSI</button><span id="hubbleTime" class="text-[10px] opacity-30 ml-2">Lade...</span></div>
+</div>
+<div class="overflow-x-auto -mx-6 px-6">
+<table class="w-full"><thead><tr class="text-[10px] text-white/30 tracking-widest border-b border-white/10"><th class="text-left py-3 font-normal">SYM</th><th class="text-left font-normal">SCORE</th><th class="text-left font-normal">ATH DD</th><th class="text-left font-normal">RSI</th><th class="text-left font-normal">BTC.D</th><th class="text-left font-normal">MF</th><th class="text-left font-normal max-w-[200px]">STORY</th><th class="text-left font-normal">READY</th></tr></thead>
+<tbody id="hubbleBody"><tr><td colspan="8" class="text-center opacity-30 py-10">Lade Hubble Scores von /api/v34/hubble alle 15s • Kein Mock</td></tr></tbody></table>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+<div class="glass glass-yellow rounded-[20px] p-5"><div class="flex justify-between mb-3"><span class="text-[11px] tracking-widest text-white/40">🐢 TURTLE QUEUE • TOP20 LIVE</span><span id="turtleCount" class="text-[10px] bg-[#FFE600]/20 text-[#FFE600] px-2 py-1 rounded-full">0</span></div><div id="turtleQueue" class="space-y-1.5 max-h-[340px] overflow-y-auto pr-1 text-[11px]">Lade /api/v34/turtles...</div><div id="turtleFooter" class="text-[9px] opacity-40 mt-3">Lade...</div></div>
+<div class="glass glass-blue rounded-[20px] p-5"><div class="text-[11px] tracking-widest text-white/40 mb-3">🥷 SPLINTER • BED1/BED2/BED4 LIVE</div><div id="splinterList" class="space-y-1.5 max-h-[340px] overflow-y-auto pr-1 text-[11px]">Lade /api/v34/splinter...</div><div class="text-[9px] opacity-40 mt-3">Bed1 Trend + Bed4 MoneyFlow + Bed2 SL + Bed3 Hold • Live API</div></div>
+<div class="glass rounded-[20px] p-5" style="border:1px solid rgba(255,230,0,0.2)"><div class="text-[11px] tracking-widest text-white/40 mb-2">🔥 OPEN POSITIONS • PAPER LIVE</div><div class="text-[9px] opacity-50 mb-3">Echte Positionen von /api/v34/active • Rina blockt Panic</div><div id="openPositions" class="space-y-1.5 max-h-[240px] overflow-y-auto pr-1 text-[11px]">Lade /api/v34/active...</div><div class="mt-4 bg-[#FFE600]/10 border border-[#FFE600]/20 rounded-xl p-3"><div class="text-[#FFE600] font-bold text-[11px]">🧙 WIZDRAW — CLOSE ALL</div><div class="text-[10px] opacity-60 mt-1">Prüft Rina Block • rudi_atmet_durch</div><button onclick="wizdrawCloseAll()" class="mt-2 w-full bg-[#FFE600] text-black font-bold py-2.5 rounded-full text-[11px] shadow-[0_0_14px_#FFE600]">CLOSE ALL (prüft Rina)</button></div></div>
+</div>
+<footer class="glass rounded-full px-4 py-2.5 flex flex-wrap justify-between items-center text-[10px] text-white/30">
+<div class="flex gap-2 items-center"><a href="/api/v34/hubble" target="_blank" class="border border-[#FFE600]/30 px-3 py-1 rounded-full hover:bg-[#FFE600] hover:text-black">/hubble</a><a href="/api/v34/rina" target="_blank" class="border border-[#00D4FF]/30 px-3 py-1 rounded-full hover:bg-[#00D4FF] hover:text-black">/rina</a><a href="/api/v34/debug" target="_blank" class="border border-white/10 px-3 py-1 rounded-full">/debug</a><a href="/api/v34/health" target="_blank" class="border border-white/10 px-3 py-1 rounded-full">/health</a></div>
+<span class="tracking-widest">V3.5 GELB-BLAU EXTREME • KEULE • HIRSCHGARTEN • HOLZ STEHT • LATENCY <span id="latency">--ms</span></span>
+</footer>
 </main>
-
 <script>
-function el(id){return document.getElementById(id)}
-function fmt(n){return typeof n==='number'? n.toLocaleString('de-DE',{maximumFractionDigits:2}) : n}
-async function j(u){try{const r=await fetch(u);return await r.json()}catch(e){return null}}
-async function tick(){
-  const d=new Date(); el('utc').textContent=d.toISOString().slice(11,19)
-  const [health,turtles,hubble,paper,rina]=await Promise.all([j('/api/v34/health'),j('/api/v34/turtles'),j('/api/v34/hubble'),j('/api/v34/paper'),j('/api/v34/rina')])
-  if(health){ el('status').textContent=health.status||'JAGT'; el('equity').textContent='$'+fmt(health.equity||100000); el('apiMode').textContent=(health.api_mode||'--').toUpperCase(); el('queueCount').textContent=(health.queue||0)+'/100'; el('queueSub').textContent='Watchlist: '+(health.watchlist||0)+' / 20 • Hubble: '+(health.hubble||0); el('moneyflowVal').textContent='$'+fmt(health.equity||100000); }
-  if(turtles){
-    const q=turtles.queue||[], w=turtles.watchlist||[]
-    el('watchlist').innerHTML=w.length? w.map((x,i)=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span>${i+1}. <b class="neon-yellow">${x.symbol}</b></span><span>${fmt(x.price)} • ${x.chg_24h>0?'+':''}${x.chg_24h}% • Vol ${fmt(x.vol_score)}</span></div>`).join('') : 'Keine Watchlist'
-    el('queueList').innerHTML=q.slice(0,30).map((x,i)=>`<div class="flex justify-between bg-black/20 rounded px-2 py-1"><span>${i+1}. ${x.symbol}</span><span>${fmt(x.price)} • ${x.chg_24h}%</span></div>`).join('')
-  }
-  if(hubble){
-    const s=hubble.scores||[]
-    el('readyCount').textContent=s.filter(x=>x.ready).length+' READY'
-    el('hubble').innerHTML=s.length? s.map(x=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span><b class="${x.ready?'neon-blue':'text-white/70'}">${x.symbol}</b> <span class="text-white/40">RSI ${x.rsi} • BB ${x.bb_width} • ${x.healthline_90d||''}</span></span><span><b>${x.score}</b> • ${x.ath_dd}% • ${x.chg_24h}% / ${x.chg_7d}%</span></div>`).join('') : 'Keine Scores'
-  }
-  if(paper){
-    const o=paper.open||[]
-    el('paper').innerHTML=o.length? o.map(t=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span><b class="neon-yellow">${t.symbol}</b> ${t.qty} @ ${fmt(t.price)} • TP ${fmt(t.tp)} / SL ${fmt(t.sl)}</span><span>$${fmt(t.notional)} • PnL $${fmt(t.pnl)} (${t.pnl_pct}%)</span></div>`).join('') : 'Keine offenen Trades — wartet auf ready Score ≥45'
-    el('rinaCount').textContent=(paper.open||[]).length+' PAPER'
-  }
-  if(rina){ el('rinaWindows').textContent='Rinas: '+(rina.rinas||[]).length+' • Poll 5min'; }
+let hubbleData=[], sortKey='score', sortDesc=true, lastCalls=[];
+function fmtPrice(p){if(p==null||isNaN(p))return'--'; if(p<0.01) return '$'+p.toFixed(6); if(p<1) return '$'+p.toFixed(4); return '$'+p.toFixed(2)}
+function scoreColor(s){if(s>=75) return '#FFE600'; if(s>=50) return '#00D4FF'; return '#ff4d4d'}
+function scoreBg(s){if(s>=75) return 'bg-[#FFE600]'; if(s>=50) return 'bg-[#00D4FF]'; return 'bg-[#ff4d4d]'}
+function sortTable(k){if(sortKey===k) sortDesc=!sortDesc; else {sortKey=k; sortDesc=true} renderHubble()}
+function renderHubble(){
+ const tbody=document.getElementById('hubbleBody');
+ if(!hubbleData.length){tbody.innerHTML='<tr><td colspan="8" class="text-center opacity-30 py-10">Keine Scores - Hubble jagt Top8 aus Queue alle 5min - /api/v34/hubble</td></tr>';return}
+ let sorted=[...hubbleData].sort((a,b)=>{let av=a[sortKey]||0,bv=b[sortKey]||0; if(av<bv) return sortDesc?1:-1; if(av>bv) return sortDesc?-1:1; return 0});
+ let html='';
+ sorted.slice(0,25).forEach(h=>{
+  const col=scoreColor(h.score);
+  const ready = h.ready ? `<span class="badge-yellow">READY ${h.score}</span>` : (h.score>=50 ? `<span class="badge-wait">WAIT ${h.score}</span>` : `<span class="badge-wait" style="color:#ff4d4d;border-color:#ff4d4d">DISCARD</span>`);
+  html+=`<tr class="border-b border-white/[0.04] hover:bg-white/[0.03] transition">
+  <td class="py-3"><b style="color:${col}">${(h.symbol||'--').replace('USDT','')}</b><div class="text-[9px] opacity-40">${h.symbol||''}</div></td>
+  <td><div class="flex items-center gap-2"><div class="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden"><div class="h-full ${scoreBg(h.score)}" style="width:${h.score}%;box-shadow:0 0 8px ${col}"></div></div><span style="color:${col}" class="font-bold text-[11px]">${h.score}</span></div></td>
+  <td style="color:${h.ath_dd<-40?'#FFE600':'#888'}">${h.ath_dd!=null?h.ath_dd.toFixed(1)+'%':'--'}</td>
+  <td style="color:${(h.rsi||50)<38?'#FFE600':'#888'}">${h.rsi!=null?h.rsi.toFixed(0):'--'}</td>
+  <td class="opacity-60">${h.btc_dom!=null?h.btc_dom.toFixed(1)+'%':'--'}</td>
+  <td><span class="text-[10px] ${h.mf_verdict==='GUT'?'text-[#FFE600]':'opacity-60'}">${h.mf_verdict||'--'}</span></td>
+  <td><div class="max-w-[200px] truncate text-[10px] opacity-60">${h.fractal||h.short_story||'--'}</div></td>
+  <td>${ready}</td></tr>`;
+ });
+ tbody.innerHTML=html;
 }
-tick(); setInterval(tick,15000)
+async function fetchReal(url){
+ const t0=performance.now();
+ try{
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json();
+  const dt=Math.round(performance.now()-t0);
+  document.getElementById('latency').innerText=dt+'ms';
+  return j;
+ }catch(e){ console.error('[API FAIL]',url,e); throw e; }
+}
+async function loadHubble(){
+ try{
+  const j=await fetchReal('/api/v34/hubble');
+  hubbleData=j.scores||[];
+  document.getElementById('hubbleMeta').innerText=`${j.count||hubbleData.length} scores • ${j.ready_count||0} READY • Live`;
+  document.getElementById('hubbleTime').innerText=new Date(j.timestamp||Date.now()).toLocaleTimeString()+' Live';
+  document.getElementById('readyCount').innerText=`${j.ready_count||0} READY`;
+  document.getElementById('btcDom').innerText=j.indices?.btc_dom!=null?j.indices.btc_dom.toFixed(1)+'%':'--%';
+  document.getElementById('usdtDom').innerText=j.indices?.usdt_dom!=null?j.indices.usdt_dom.toFixed(1)+'%':'--%';
+  document.getElementById('btcChange').innerText=j.indices?.btc_dom_change!=null?(j.indices.btc_dom_change>0?'+':'')+j.indices.btc_dom_change.toFixed(2)+'%':'--';
+  document.getElementById('fractal').innerText=j.indices?.fractal||'Fractal lädt...';
+  renderHubble();
+ }catch(e){
+  document.getElementById('hubbleMeta').innerText='API Fehler: '+e.message;
+ }
+}
+async function loadRina(){
+ try{
+  const j=await fetchReal('/api/v34/rina');
+  document.getElementById('rinaCount').innerText=`${j.active_freedom_windows?.length||0} RINA`;
+  const active=j.active_freedom_windows||[];
+  const div=document.getElementById('rinaActive');
+  if(!active.length){div.innerHTML='<div class="opacity-30 py-10 text-center">Keine aktiven Freedom Windows</div>'}
+  else{
+   let html='';
+   active.forEach(w=>{
+    html+=`<div class="border border-[#FFE600]/20 rounded-xl p-3 bg-[#FFE600]/5 flex justify-between items-center">
+    <div><div class="font-bold text-[11px]">${(w.symbol||w).toString().replace('USDT','')} / Freedom</div><div class="text-[10px] opacity-60">⏱️ ${w.elapsed_min?.toFixed(1)||0} / 5min • ${w.distance_to_hochsitz?.toFixed(2)||0}%</div></div>
+    <span class="badge-yellow">FREEDOM</span></div>`;
+   });
+   div.innerHTML=html;
+  }
+  try{
+   const hJ=await fetchReal('/api/v34/rina/hochsitz');
+   const anchors=hJ.anchors||{};
+   const keys=Object.keys(anchors);
+   const hoDiv=document.getElementById('rinaHochsitz');
+   if(!keys.length){hoDiv.innerHTML='<div class="opacity-30 py-10 text-center">Keine Hochsitz Anker</div>'}
+   else{
+    let hhtml='';
+    keys.slice(0,10).forEach(k=>{
+     const a=anchors[k];
+     hhtml+=`<div class="flex justify-between py-2 border-b border-white/5 text-[11px]"><div><b>${k.replace('USDT','')}</b></div><div>${(a.price||0).toFixed(4)}</div></div>`;
+    });
+    hoDiv.innerHTML=hhtml;
+   }
+  }catch(e){}
+  const reinforced=j.reinforced_paths||[];
+  const rDiv=document.getElementById('rinaReinforced');
+  if(reinforced.length){
+   let rh='';
+   reinforced.slice(-5).reverse().forEach(r=>{
+    rh+=`<div class="py-1.5 border-b border-white/5"><b class="text-[#FFE600]">${r.symbol?.replace('USDT','')}</b> ✅ nach ${r.elapsed_min?.toFixed(1)||0}min</div>`;
+   });
+   rDiv.innerHTML=rh;
+  }
+ }catch(e){document.getElementById('rinaActive').innerHTML=`<div class="text-[#ff4d4d] py-6 text-center">Rina API Fehler: ${e.message}</div>`}
+}
+async function loadTurtles(){
+ try{
+  const j=await fetchReal('/api/v34/turtles');
+  const q=j.queue||[];
+  document.getElementById('queueCount').innerText=`${j.count||q.length}`;
+  document.getElementById('queueUniverse').innerText=`Universe ${j.universe_size||100} • ${q.length} queued • Live`;
+  document.getElementById('lastScan').innerText=`Last: ${new Date().toLocaleTimeString()} • Live`;
+  document.getElementById('queueBar').style.width=`${Math.min(100,(q.length/100)*100)}%`;
+  const div=document.getElementById('turtleQueue');
+  let html='';
+  q.slice(0,20).forEach(t=>{
+   html+=`<div class="flex justify-between py-2 border-b border-white/5"><span>🐢 ${t.symbol||t}</span><span>${t.price||'--'}</span></div>`;
+  });
+  div.innerHTML=html;
+ }catch(e){}
+}
+async function loadSplinter(){
+ try{
+  const j=await fetchReal('/api/v34/splinter');
+  const list=j.inspection||[];
+  const div=document.getElementById('splinterList');
+  let html='';
+  list.forEach(s=>{
+   html+=`<div class="py-2 border-b border-white/5"><b>${s.symbol||'--'}</b> ${s.ready_for_entry?'🟢':'🔴'} ${s.hold_mode||''}</div>`;
+  });
+  div.innerHTML=html;
+ }catch(e){}
+}
+async function loadActive(){
+ try{
+  const j=await fetchReal('/api/v34/active');
+  lastCalls=j.active_calls||[];
+  const div=document.getElementById('openPositions');
+  if(!lastCalls.length){div.innerHTML='<div class="opacity-30 py-10 text-center">Keine offenen Positionen</div>'; return}
+  let html='';
+  lastCalls.forEach(c=>{
+   html+=`<div class="py-2 border-b border-white/5"><b>${c.symbol}</b> ${(c.pnl_pct||0).toFixed(2)}%</div>`;
+  });
+  div.innerHTML=html;
+  document.getElementById('equity').innerText=j.equity!=null?'$'+j.equity.toFixed(2)+' Live':'Lade...';
+ }catch(e){}
+}
+async function loadMoney(){
+ try{
+  const j=await fetchReal('/api/v34/moneyflow');
+  document.getElementById('mfInflow').innerText=j.inflow!=null?'$'+j.inflow.toFixed(0):'--';
+  document.getElementById('mfNet').innerText=j.net_flow!=null?'$'+j.net_flow.toFixed(0):'--';
+  document.getElementById('mfVerdict').innerText='Verdict: '+(j.verdict||'Lade...');
+  document.getElementById('mfBar').style.width=(j.verdict==='GUT'?'78':'35')+'%';
+ }catch(e){}
+}
+function updateTime(){
+ const now=new Date();
+ document.getElementById('utc').innerText=`UTC ${now.toISOString().slice(11,19)}`;
+ document.getElementById('berlin').innerText=now.toLocaleTimeString('de-DE',{timeZone:'Europe/Berlin'})+' BER';
+ document.getElementById('rinaTime').innerText=now.toLocaleTimeString();
+ const hour=now.getHours();
+ document.getElementById('timeWindow').innerText=`${String(hour).padStart(2,'0')}:00 CET`;
+ const isBest=hour>=9&&hour<15;
+ document.getElementById('timeStatus').innerHTML=isBest?'<span class="w-1.5 h-1.5 bg-[#FFE600] rounded-full pulse"></span> BEST':'BLACKLIST';
+ document.getElementById('timeBar').style.width=isBest?'85%':'30%';
+}
+async function loadAll(){
+ updateTime();
+ await Promise.all([loadHubble(), loadRina(), loadTurtles(), loadSplinter(), loadActive(), loadMoney()]);
+ try{ const h=await fetchReal('/api/v34/health'); document.getElementById('status').innerText=h.status||'JAGT'; document.getElementById('uptime').innerText='UP '+Math.floor((h.uptime_sec||0)/3600)+'h'; }catch(e){}
+}
+function setFreedom(m){
+ fetch('/api/v34/rina/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({freedom_window_min:m})}).then(r=>r.json()).then(()=>{alert(`Rina Freiheit auf ${m}min`); loadRina()})
+}
+async function wizdrawCloseAll(){
+ if(!lastCalls.length){alert('Keine offenen'); return}
+ if(!confirm(`${lastCalls.length} closen?`)) return;
+ for(let c of lastCalls){ try{ await fetch(`/api/v34/wizdraw/close/${c.id}`,{method:'POST'}) }catch(e){} }
+ setTimeout(loadActive,800);
+}
+loadAll(); updateTime();
+setInterval(loadAll,15000);
+setInterval(updateTime,1000);
+setInterval(loadRina,15000);
 </script>
 </body>
 </html>
