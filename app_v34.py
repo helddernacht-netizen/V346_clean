@@ -501,8 +501,17 @@ if HAS_FASTAPI:
     @app.get("/api/v34/debug")
     def api_debug():
         with LOCK: return JSONResponse(json_safe({"queue_cnt": len(STATE.get("vorauswahl_queue",[])), "watchlist_cnt": len(STATE.get("watchlist",[])), "hubble_cnt": len(STATE.get("hubble_scores",[])), "ready_cnt": len([s for s in STATE.get("hubble_scores",[]) if s.get("ready")]), "paper_trades": STATE.get("paper_trades",[])[-10:], "status": STATE.get("status"), "uptime_sec": int(time.time()-STATE.get("start_ts", time.time())), "equity": STATE.get("equity"), "api_mode": STATE.get("api_mode"), "api_errors": STATE.get("api_errors")}))
+    def _serve_dashboard():
+        for cand in ["dashboard_v34_hubble.html","./dashboard_v34_hubble.html","/opt/render/project/src/dashboard_v34_hubble.html", os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard_v34_hubble.html")]:
+            if os.path.exists(cand):
+                try:
+                    with open(cand, "r", encoding="utf-8") as f: return f.read()
+                except: continue
+        return None
     @app.get("/", response_class=HTMLResponse)
     def root():
+        html = _serve_dashboard()
+        if html: return HTMLResponse(html)
         return HTMLResponse(f"<html><body style='background:#000;color:#39ff14;font-family:monospace;padding:20px'><h1>Leonardo V3.4.7 FIXED LIVE</h1><p>Queue: {len(STATE.get('vorauswahl_queue',[]))} | Watchlist: {len(STATE.get('watchlist',[]))} | Equity: ${STATE.get('equity')} | Mode: {STATE.get('api_mode')}</p><p><a href='/api/v34/debug'>debug</a> | <a href='/api/v34/turtles'>turtles</a> | <a href='/api/v34/hubble'>hubble</a> | <a href='/api/v34/paper'>paper</a></p></body></html>")
     @app.get("/dashboard", response_class=HTMLResponse)
     def dashboard2(): return root()
@@ -523,6 +532,11 @@ if __name__ == "__main__":
         from http.server import BaseHTTPRequestHandler, HTTPServer
         class H(BaseHTTPRequestHandler):
             def do_GET(self):
+                if self.path in ("/", "/dashboard", "/index.html"):
+                    for cand in ["dashboard_v34_hubble.html","./dashboard_v34_hubble.html", os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard_v34_hubble.html")]:
+                        if os.path.exists(cand):
+                            with open(cand, "rb") as f: data=f.read()
+                            self.send_response(200); self.send_header("Content-Type","text/html; charset=utf-8"); self.end_headers(); self.wfile.write(data); return
                 routes = {"/api/v34/health": {"ok": True, "queue": len(STATE["vorauswahl_queue"]), "watchlist": len(STATE["watchlist"]), "equity": STATE["equity"], "api_mode": STATE["api_mode"]},
                           "/api/v34/turtles": {"queue": STATE["vorauswahl_queue"][:100], "watchlist": STATE["watchlist"]},
                           "/api/v34/hubble": {"scores": STATE["hubble_scores"][:20]},
