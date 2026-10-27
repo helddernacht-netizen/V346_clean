@@ -31,7 +31,7 @@ body{background:#07080F;color:#E8E8E8;font-family:'JetBrains Mono',monospace}
 <div class="w-11 h-11 rounded-2xl bg-black border border-[#FFE600]/50 flex items-center justify-center shadow-[0_0_20px_rgba(255,230,0,0.4)]">🐢</div>
 <div>
 <div class="font-bold text-[15px] tracking-[0.15em]">TURTLE <span class="neon-yellow">V3.5</span> // <span class="neon-blue">GELB-BLAU</span> <span class="text-white/30 text-[10px]">KEULE</span></div>
-<div class="text-[10px] text-white/40">UTC <span id="utc">--:--:--</span> • RINA 5min • BERLIN HIRSCHGARTEN</div>
+<div class="text-[10px] text-white/40">UTC <span id="utc">--:--:--</span> • RINA 5min • BERLIN HIRSCHGARTEN • <span id="apiMode">--</span></div>
 </div>
 </div>
 <div class="flex gap-2">
@@ -43,19 +43,74 @@ body{background:#07080F;color:#E8E8E8;font-family:'JetBrains Mono',monospace}
 </header>
 <main class="max-w-[1700px] mx-auto p-4 space-y-4">
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-<div class="glass glass-yellow rounded-2xl p-4 shimmer"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">MONEYFLOW • BED4</div><div class="text-[26px] font-bold neon-yellow">BED4</div><div class="text-[11px] text-white/60">Net +€12.4k • 24h +8.3% • GUT</div></div>
-<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">INDICES • BTC.D</div><div class="text-[26px] font-bold neon-blue">54.2%</div><div class="text-[11px] text-white/60">Dominance -0.6% • risk-on</div></div>
-<div class="glass glass-yellow rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">BEST TIME • BERLIN</div><div class="text-[26px] font-bold">09:00 CET</div></div>
-<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">QUEUE • TURTLE</div><div class="text-[36px] font-bold">84/100</div></div>
+<div class="glass glass-yellow rounded-2xl p-4 shimmer"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">MONEYFLOW • BED4</div><div class="text-[26px] font-bold neon-yellow" id="moneyflowVal">BED4</div><div class="text-[11px] text-white/60" id="moneyflowSub">Net +€12.4k • 24h +8.3% • GUT</div></div>
+<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">INDICES • BTC.D</div><div class="text-[26px] font-bold neon-blue" id="btcDom">54.2%</div><div class="text-[11px] text-white/60" id="btcDomSub">Dominance -0.6% • risk-on</div></div>
+<div class="glass glass-yellow rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">BEST TIME • BERLIN</div><div class="text-[26px] font-bold" id="bestTime">09:00 CET</div><div class="text-[11px] text-white/60" id="bestTimeSub">Paper: 1% Equity / Trade</div></div>
+<div class="glass glass-blue rounded-2xl p-4"><div class="text-[10px] tracking-[0.2em] text-white/40 mb-3">QUEUE • TURTLE</div><div class="text-[36px] font-bold" id="queueCount">--/100</div><div class="text-[11px] text-white/60" id="queueSub">Watchlist: -- / 20</div></div>
 </div>
+
 <div class="glass glass-blue rounded-[24px] p-5">
 <h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-yellow">RINA RAKETE</span> — <span class="neon-blue">HIRSCHGARTEN</span></h2>
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5">
-<div class="bg-black/40 rounded-2xl border border-[#FFE600]/20 p-4"><div class="text-[#FFE600]">FREEDOM WINDOWS • 3/3 open</div></div>
-<div class="bg-black/40 rounded-2xl border border-[#00D4FF]/20 p-4"><div class="text-[#00D4FF]">HOCHSITZ ANKER • Support hold</div></div>
+<div class="bg-black/40 rounded-2xl border border-[#FFE600]/20 p-4"><div class="text-[#FFE600]">FREEDOM WINDOWS • 3/3 open</div><div class="text-[11px] text-white/60 mt-1" id="rinaWindows">Wird live aus /api/v34/rina gefüllt</div></div>
+<div class="bg-black/40 rounded-2xl border border-[#00D4FF]/20 p-4"><div class="text-[#00D4FF]">HOCHSITZ ANKER • Support hold</div><div class="text-[11px] text-white/60 mt-1" id="rinaAnchor">Healthline 90d • SMA20 / SMA50</div></div>
 <div class="bg-black/40 rounded-2xl border border-white/10 p-4">Verstärkte Pfade — Vertrauen statt Angst. rudi_atmet_durch</div>
 </div>
 </div>
+
+<!-- WATCHLIST 20 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="glass glass-yellow rounded-[24px] p-5">
+<h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-yellow">WATCHLIST • 20</span> <span class="text-white/30">SCALPING 24H-7D</span></h2>
+<div id="watchlist" class="mt-4 space-y-1 text-[12px]">Lade Watchlist...</div>
+</div>
+<div class="glass glass-blue rounded-[24px] p-5">
+<h2 class="font-bold text-[13px] tracking-[0.2em]"><span class="neon-blue">HUBBLE SCORES</span> <span class="text-white/30">BEWERTUNGSENGINE</span></h2>
+<div id="hubble" class="mt-4 space-y-1 text-[12px]">Lade Scores...</div>
+</div>
+</div>
+
+<!-- PAPER + TURTLE QUEUE -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<div class="glass rounded-[24px] p-5">
+<h2 class="font-bold text-[13px] tracking-[0.2em]">PAPER TRADES • <span class="neon-yellow">$100.000 • 1%</span></h2>
+<div id="paper" class="mt-4 space-y-1 text-[12px]">Keine offenen Trades</div>
+</div>
+<div class="glass rounded-[24px] p-5">
+<h2 class="font-bold text-[13px] tracking-[0.2em]">TURTLE QUEUE • <span class="neon-blue">TOP 100 VOLATILSTE</span></h2>
+<div id="queueList" class="mt-4 space-y-1 text-[12px] max-h-[320px] overflow-y-auto">Lade Queue...</div>
+</div>
+</div>
+
+<div class="text-center text-[10px] text-white/30 pb-4">Leonardo V3.4.7 FIXED • API: /api/v34/health • /api/v34/turtles • /api/v34/hubble • /api/v34/paper • Poll 15s • Anti-Ban: 1 Bulk-Call / 60s</div>
 </main>
+
+<script>
+function el(id){return document.getElementById(id)}
+function fmt(n){return typeof n==='number'? n.toLocaleString('de-DE',{maximumFractionDigits:2}) : n}
+async function j(u){try{const r=await fetch(u);return await r.json()}catch(e){return null}}
+async function tick(){
+  const d=new Date(); el('utc').textContent=d.toISOString().slice(11,19)
+  const [health,turtles,hubble,paper,rina]=await Promise.all([j('/api/v34/health'),j('/api/v34/turtles'),j('/api/v34/hubble'),j('/api/v34/paper'),j('/api/v34/rina')])
+  if(health){ el('status').textContent=health.status||'JAGT'; el('equity').textContent='$'+fmt(health.equity||100000); el('apiMode').textContent=(health.api_mode||'--').toUpperCase(); el('queueCount').textContent=(health.queue||0)+'/100'; el('queueSub').textContent='Watchlist: '+(health.watchlist||0)+' / 20 • Hubble: '+(health.hubble||0); el('moneyflowVal').textContent='$'+fmt(health.equity||100000); }
+  if(turtles){
+    const q=turtles.queue||[], w=turtles.watchlist||[]
+    el('watchlist').innerHTML=w.length? w.map((x,i)=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span>${i+1}. <b class="neon-yellow">${x.symbol}</b></span><span>${fmt(x.price)} • ${x.chg_24h>0?'+':''}${x.chg_24h}% • Vol ${fmt(x.vol_score)}</span></div>`).join('') : 'Keine Watchlist'
+    el('queueList').innerHTML=q.slice(0,30).map((x,i)=>`<div class="flex justify-between bg-black/20 rounded px-2 py-1"><span>${i+1}. ${x.symbol}</span><span>${fmt(x.price)} • ${x.chg_24h}%</span></div>`).join('')
+  }
+  if(hubble){
+    const s=hubble.scores||[]
+    el('readyCount').textContent=s.filter(x=>x.ready).length+' READY'
+    el('hubble').innerHTML=s.length? s.map(x=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span><b class="${x.ready?'neon-blue':'text-white/70'}">${x.symbol}</b> <span class="text-white/40">RSI ${x.rsi} • BB ${x.bb_width} • ${x.healthline_90d||''}</span></span><span><b>${x.score}</b> • ${x.ath_dd}% • ${x.chg_24h}% / ${x.chg_7d}%</span></div>`).join('') : 'Keine Scores'
+  }
+  if(paper){
+    const o=paper.open||[]
+    el('paper').innerHTML=o.length? o.map(t=>`<div class="flex justify-between bg-black/30 rounded px-2 py-1"><span><b class="neon-yellow">${t.symbol}</b> ${t.qty} @ ${fmt(t.price)} • TP ${fmt(t.tp)} / SL ${fmt(t.sl)}</span><span>$${fmt(t.notional)} • PnL $${fmt(t.pnl)} (${t.pnl_pct}%)</span></div>`).join('') : 'Keine offenen Trades — wartet auf ready Score ≥45'
+    el('rinaCount').textContent=(paper.open||[]).length+' PAPER'
+  }
+  if(rina){ el('rinaWindows').textContent='Rinas: '+(rina.rinas||[]).length+' • Poll 5min'; }
+}
+tick(); setInterval(tick,15000)
+</script>
 </body>
 </html>
