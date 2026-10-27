@@ -1,5 +1,5 @@
 """
-Leonardo / Splinterzell V3.4.8 FIXED (v348 + neue Routen)
+Leonardo / Splinterzell V3.4.9 FIXED (v349 Circuit-Breaker Fix)
 ================================================
 Was im Original kaputt war (splinterzell_v346.txt):
  1. SYNTAX ERROR Zeile 284: `from apscheduler...` war ausserhalb vom try-Block
@@ -98,83 +98,125 @@ def json_safe(o):
     except: return str(o)
 
 # ------------------------------------------------------------------ RATE LIMITER + HTTP
+class CircuitBreakerOpen(Exception):
+    pass
+
 class RateLimiter:
-    def __init__(self, min_interval=0.25):
+    def __init__(self, min_interval=0.4):
         self.min_interval = min_interval
         self._last = 0.0
         self._lock = Lock()
         self.consecutive_errors = 0
         self.cooldown_until = 0.0
+        self._breaker_logged_until = 0.0
+    def in_cooldown(self):
+        return time.time() < self.cooldown_until
     def wait(self):
-        with self._lock:
-            if time.time() < self.cooldown_until:
-                raise RuntimeError(f"circuit_breaker_cooldown_until_{self.cooldown_until}")
-            now = time.time()
-            delta = now - self._last
-            if delta < self.min_interval:
-                time.sleep(self.min_interval - delta)
-            self._last = time.time()
+        # Einzelner globaler Lock fuer den ganzen Request wird in http_get_json gehalten,
+        # hier nur: wenn Cooldown, SOFORT raus ohne Fehler-Zaehler, ohne Log-Spam.
+        if self.in_cooldown():
+            raise CircuitBreakerOpen(f"cooldown_bis_{self.cooldown_until:.0f}")
+        now = time.time()
+        delta = now - self._last
+        if delta < self.min_interval:
+            time.sleep(self.min_interval - delta)
+        self._last = time.time()
     def on_success(self):
         self.consecutive_errors = 0
     def on_error(self, status=None):
+        # WICHTIGER FIX: Wenn wir schon in Cooldown sind, NICHT nochmal verlaengern,
+        # sonst kommt der Breaker nie raus (jeder Versuch +60s -> Endlosschleife).
+        if self.in_cooldown():
+            return
         self.consecutive_errors += 1
         if self.consecutive_errors >= 3:
             self.cooldown_until = time.time() + 60
-            print(f"[API] CIRCUIT BREAKER 60s - {self.consecutive_errors} Fehler, Status {status}")
+            if time.time() > self._breaker_logged_until:
+                print(f"[API] CIRCUIT BREAKER 60s - {self.consecutive_errors} Fehler, Status {status} - alle weiteren Calls bis {self.cooldown_until:.0f} werden SOFORT mit Mock beantwortet, kein Retry")
+                self._breaker_logged_until = self.cooldown_until
 
 limiter = RateLimiter(min_interval=0.25)
 OFFLINE_MODE = False  # wird nach 1. hartem DNS-Fail gesetzt, dann kein weiterer Netzwerk-Versuch
 
 _cache = {}  # url -> (ts, data)
+_fail_cache = {}  # url -> ts, negative cache fuer 400/403/451/404
+
+# Globaler HTTP-Lock: verhindert Burst, wenn 4 Scheduler-Threads gleichzeitig feuern
+HTTP_LOCK = Lock()
+BINANCE_BASES = ["https://api.binance.com", "https://data-api.binance.vision"]
 
 def http_get_json(url, timeout=3, max_retries=2):
     global OFFLINE_MODE
     if OFFLINE_MODE:
         return None
-    """Ein Request mit Retry, Backoff, Retry-After, Cache. Gibt None bei hartem Fail."""
-    # Cache zuerst
     if url in _cache:
         ts, data = _cache[url]
         ttl = CACHE_TTL_TICKER if "ticker/24hr" in url else CACHE_TTL_KLINES
         if time.time() - ts < ttl:
             return data
-    for attempt in range(max_retries):
-        try:
-            limiter.wait()
-            req = urllib.request.Request(url, headers={"User-Agent": "Leonardo-V346/1.0", "Accept": "application/json"})
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
-                data = json.loads(resp.read().decode())
-                limiter.on_success()
-                _cache[url] = (time.time(), data)
-                return data
-        except urllib.error.HTTPError as e:
-            limiter.on_error(e.code)
-            body = ""
-            try: body = e.read().decode()[:200]
-            except: pass
-            print(f"[API] HTTP {e.code} {url} attempt={attempt} body={body}")
-            if e.code in (429, 418, 500, 502, 503):
-                retry_after = e.headers.get("Retry-After")
-                wait_s = float(retry_after) if retry_after else (2 ** attempt) + random.uniform(0, 1)
-                print(f"[API] Backoff {wait_s:.1f}s")
-                time.sleep(wait_s)
-                continue
-            if e.code == 451:
-                print("[API] 451 Geo-Blocked - Fallback auf Mock")
+    # Breaker offen? SOFORT None, kein Log, kein on_error, kein Retry
+    if limiter.in_cooldown():
+        return None
+    # Negative Cache fuer 400/404/451/403: gleicher Symbol-Fehler nicht 40x loggen
+    if url in _fail_cache and time.time() - _fail_cache[url] < 300:
+        return None
+    # Fallback-Host: api.binance.com -> data-api.binance.vision (kein Geo-Block, gleicher Pfad)
+    urls_to_try = [url]
+    for base in BINANCE_BASES[1:]:
+        if url.startswith(BINANCE_BASES[0]):
+            urls_to_try.append(url.replace(BINANCE_BASES[0], base, 1))
+    last_err = None
+    with HTTP_LOCK:
+        for u in urls_to_try:
+            if limiter.in_cooldown():
                 return None
-            return None
-        except Exception as e:
-            # DNS / kein Internet -> sofort in Mock-Modus, keine weiteren Retries fuer alle Coins
-            if "Name or service not known" in str(e) or "nodename nor servname" in str(e) or "Temporary failure" in str(e) or isinstance(e, OSError):
-                OFFLINE_MODE = True
-                print(f"[API] OFFLINE erkannt ({e}) -> Mock-Modus fuer diesen Run")
-                return None
-            limiter.on_error(None)
-            print(f"[API] {type(e).__name__} {url} attempt={attempt}: {e}")
-            if attempt < max_retries - 1:
-                time.sleep((2 ** attempt) + random.uniform(0, 0.5))
-            else:
-                return None
+            for attempt in range(max_retries):
+                try:
+                    limiter.wait()
+                    req = urllib.request.Request(u, headers={"User-Agent": "Leonardo-V346/1.0", "Accept": "application/json"})
+                    with urllib.request.urlopen(req, timeout=timeout) as resp:
+                        data = json.loads(resp.read().decode())
+                        limiter.on_success()
+                        _cache[url] = (time.time(), data)
+                        return data
+                except CircuitBreakerOpen:
+                    return None
+                except urllib.error.HTTPError as e:
+                    body = ""
+                    try: body = e.read().decode()[:200]
+                    except: pass
+                    if e.code in (403, 451, 400, 404):
+                        # Geo-Block / Invalid Symbol: NICHT 429, kein Backoff-Spam, naechsten Host versuchen
+                        _fail_cache[url] = time.time()
+                        if e.code in (403, 451):
+                            print(f"[API] HTTP {e.code} {u} - Geo/Restricted, versuche Fallback-Host {urls_to_try}")
+                            # Nicht als Breaker-Fehler zaehlen, sonst blockt 1 Geo-Fehler alles
+                            last_err = e
+                            break  # naechster Host
+                        else:
+                            print(f"[API] HTTP {e.code} {u} body={body} - Symbol evtl. delisted, 5min negative-cache")
+                            return None
+                    limiter.on_error(e.code)
+                    print(f"[API] HTTP {e.code} {u} attempt={attempt} body={body}")
+                    if e.code in (429, 418, 500, 502, 503):
+                        if attempt < max_retries - 1:
+                            wait_s = (2 ** attempt) + random.uniform(0, 1)
+                            print(f"[API] Backoff {wait_s:.1f}s")
+                            time.sleep(wait_s)
+                            continue
+                    return None
+                except Exception as e:
+                    if "Name or service not known" in str(e) or "nodename nor servname" in str(e) or "Temporary failure" in str(e) or isinstance(e, OSError):
+                        OFFLINE_MODE = True
+                        print(f"[API] OFFLINE erkannt ({e}) -> Mock-Modus fuer diesen Run")
+                        return None
+                    limiter.on_error(None)
+                    last_err = e
+                    print(f"[API] {type(e).__name__} {u} attempt={attempt}: {e}")
+                    if attempt < max_retries - 1:
+                        time.sleep((2 ** attempt) + random.uniform(0, 0.5))
+                    else:
+                        return None
     return None
 
 # ------------------------------------------------------------------ MOCK (deterministisch, fuer Tests ohne Internet)
